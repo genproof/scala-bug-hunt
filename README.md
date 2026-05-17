@@ -4,16 +4,18 @@ A list of bugs I found in the Scala ecosystem with an AI-assisted fuzzing setup 
 
 Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + latest library version). If something turns out not to be a real bug, sorry — just close it; I monitor every issue and will pick it up.
 
+> **2026-05-17 retroactive audit.** All filings were re-run through a cross-vendor adversarial gate (codex prover + claude skeptic + 2 independent judges). 11 issues marked ~~struck through~~ below have been self-closed: 8 are false positives the gate flagged (and I've apologised in each thread), 2 yaes ones were the agent reading a stale local fork, and 1 soundness one was already-fixed upstream before filing. The remaining 172 issues survived the gate.
+
 ## Issues filed
 
 ### [armanbilge/calico](https://github.com/armanbilge/calico)
 
-- ![status](https://img.shields.io/github/issues/detail/state/armanbilge/calico/470) [#470](https://github.com/armanbilge/calico/issues/470) — KeyedChildren publishes the new active map before new nodes are acquired
+- ~~![status](https://img.shields.io/github/issues/detail/state/armanbilge/calico/470) [#470](https://github.com/armanbilge/calico/issues/470) — KeyedChildren publishes the new active map before new nodes are acquired~~ — **closed (FP, gate audit 2026-05-17):** cats-effect `*>` short-circuits before the unsafe lookup; mutable-map ref behavior moots the leak claim
 
 ### [AugustNagro/magnum](https://github.com/AugustNagro/magnum)
 
-- ![status](https://img.shields.io/github/issues/detail/state/AugustNagro/magnum/148) [#148](https://github.com/AugustNagro/magnum/issues/148) — Transactor.transact catches every Throwable, including OOM and StackOverflow
-- ![status](https://img.shields.io/github/issues/detail/state/AugustNagro/magnum/149) [#149](https://github.com/AugustNagro/magnum/issues/149) — ScalaBigDecimalCodec.readSingle throws on SQL NULL instead of returning null
+- ~~![status](https://img.shields.io/github/issues/detail/state/AugustNagro/magnum/148) [#148](https://github.com/AugustNagro/magnum/issues/148) — Transactor.transact catches every Throwable, including OOM and StackOverflow~~ — **closed (FP, gate audit 2026-05-17):** broad `case t =>` is intentional — maintainer touched this block in #126 and kept the wide arm
+- ~~![status](https://img.shields.io/github/issues/detail/state/AugustNagro/magnum/149) [#149](https://github.com/AugustNagro/magnum/issues/149) — ScalaBigDecimalCodec.readSingle throws on SQL NULL instead of returning null~~ — **closed (FP, gate audit 2026-05-17):** framework contract — `T` codec throws on NULL, `Option[T]` handles it via `readSingleOption`
 - ![status](https://img.shields.io/github/issues/detail/state/AugustNagro/magnum/150) [#150](https://github.com/AugustNagro/magnum/issues/150) — Spec.orderBy / seek concatenate raw column names into SQL
 - ![status](https://img.shields.io/github/issues/detail/state/AugustNagro/magnum/151) [#151](https://github.com/AugustNagro/magnum/issues/151) — MagUser test fixture overrides equals but not hashCode (only affects tests)
 
@@ -74,7 +76,7 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 ### [EmergentOrder/onnx-scala](https://github.com/EmergentOrder/onnx-scala)
 
 - ![status](https://img.shields.io/github/issues/detail/state/EmergentOrder/onnx-scala/538) [#538](https://github.com/EmergentOrder/onnx-scala/issues/538) — ONNXHelper.outputs filter is always false because nodes is Seq[Iterable[String]] and contains takes a String
-- ![status](https://img.shields.io/github/issues/detail/state/EmergentOrder/onnx-scala/539) [#539](https://github.com/EmergentOrder/onnx-scala/issues/539) — TileV13 builds the repeats array from repeats.indices instead of repeats values, so every Tile op gets [0, 1, 2, …]
+- ~~![status](https://img.shields.io/github/issues/detail/state/EmergentOrder/onnx-scala/539) [#539](https://github.com/EmergentOrder/onnx-scala/issues/539) — TileV13 builds the repeats array from repeats.indices instead of repeats values, so every Tile op gets [0, 1, 2, …]~~ — **closed (FP, gate audit 2026-05-17):** `repeats.indices` is the project's own `Indices#indices` accessor returning stored Ints, not stdlib
 - ![status](https://img.shields.io/github/issues/detail/state/EmergentOrder/onnx-scala/540) [#540](https://github.com/EmergentOrder/onnx-scala/issues/540) — onnxTensorProtoToArray throws MatchError on BOOL, STRING, UINT*, FLOAT16, BFLOAT16 and COMPLEX tensors
 
 ### [flink-extended/flink-scala-api](https://github.com/flink-extended/flink-scala-api)
@@ -95,7 +97,7 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 - ![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/265) [#265](https://github.com/FunktionalIO/pillars/issues/265) — db-skunk SSL CirceEncoder only handles None, Trusted, System and crashes with MatchError on custom SSL contexts
 - ![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/266) [#266](https://github.com/FunktionalIO/pillars/issues/266) — migrateModule sanitization produces table names with `-`, which violates the DatabaseTable constraint (silently, via `.assume`)
 - ![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/267) [#267](https://github.com/FunktionalIO/pillars/issues/267) — db-doobie DatabaseConfig.toHikariConfig silently drops systemSchema, appSchema, and debug
-- ![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/268) [#268](https://github.com/FunktionalIO/pillars/issues/268) — db-skunk Typer.Strategy encoder emits MixedCase, decoder lowercases — round-trip OK but inconsistent with rest of codec
+- ~~![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/268) [#268](https://github.com/FunktionalIO/pillars/issues/268) — db-skunk Typer.Strategy encoder emits MixedCase, decoder lowercases — round-trip OK but inconsistent with rest of codec~~ — **closed (FP, gate audit 2026-05-17):** round-trip works; sibling `RedactionStrategy` codec uses the same mixed-case-encode / lowercase-decode pattern
 
 ### [ghostdogpr/caliban](https://github.com/ghostdogpr/caliban)
 
@@ -148,9 +150,9 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 
 ### [kitlangton/neotype](https://github.com/kitlangton/neotype)
 
-- ![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/465) [#465](https://github.com/kitlangton/neotype/issues/465) — CaseClassBuilder.newInstance silently swallows constructor exceptions and returns a fake value
+- ~~![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/465) [#465](https://github.com/kitlangton/neotype/issues/465) — CaseClassBuilder.newInstance silently swallows constructor exceptions and returns a fake value~~ — **closed (FP, gate audit 2026-05-17):** three fallback arms read as deliberate partial-evaluation; no runtime reproducer
 - ![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/466) [#466](https://github.com/kitlangton/neotype/issues/466) — LambdaCompiler.isDefinedAt silently turns Left(error) into false — collect/filter/exists drop elements without surfacing comptime errors
-- ![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/467) [#467](https://github.com/kitlangton/neotype/issues/467) — TermCompiler — TermIR.Throw uses raw throw inside flatMap, bypassing the Either error pipeline
+- ~~![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/467) [#467](https://github.com/kitlangton/neotype/issues/467) — TermCompiler — TermIR.Throw uses raw throw inside flatMap, bypassing the Either error pipeline~~ — **closed (FP, gate audit 2026-05-17):** file's own author comments mark these compile-time throws as intentional
 - ![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/468) [#468](https://github.com/kitlangton/neotype/issues/468) — comptime LambdaCompiler discards match scrutinee — `(x => f(x) match ...)` matches against `x`, not `f(x)
 
 ### [lampepfl/gears](https://github.com/lampepfl/gears)
@@ -159,7 +161,7 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 
 ### [lloydmeta/enumeratum](https://github.com/lloydmeta/enumeratum)
 
-- ![status](https://img.shields.io/github/issues/detail/state/lloydmeta/enumeratum/469) [#469](https://github.com/lloydmeta/enumeratum/issues/469) — Slick CharEnum codec calls .head on the DB string and crashes on empty values
+- ~~![status](https://img.shields.io/github/issues/detail/state/lloydmeta/enumeratum/469) [#469](https://github.com/lloydmeta/enumeratum/issues/469) — Slick CharEnum codec calls .head on the DB string and crashes on empty values~~ — **closed (FP, gate audit 2026-05-17):** sibling decoders share the same unchecked-read-then-map-lookup convention; maintainer already leaned non-issue
 
 ### [mattlianje/etl4s](https://github.com/mattlianje/etl4s)
 
@@ -178,7 +180,7 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 - ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1044) [#1044](https://github.com/propensive/soundness/issues/1044) — hypotenuse `Float`/`Double` `%%` returns wrong result for negative divisors
 - ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1045) [#1045](https://github.com/propensive/soundness/issues/1045) — quantitative Temperature + Quantity[Rankines[1]] uses inverted 9/5 factor (should be 5/9)
 - ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1046) [#1046](https://github.com/propensive/soundness/issues/1046) — gossamer `levenshteinDistance` returns 0 when the left string is empty
-- ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1047) [#1047](https://github.com/propensive/soundness/issues/1047) — jacinta `Json.delete` allocates `Array[String]` for the values column
+- ~~![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1047) [#1047](https://github.com/propensive/soundness/issues/1047) — jacinta `Json.delete` allocates `Array[String]` for the values column~~ — **closed (stale):** real bug, but already fixed in commit `3213c2e24` before the issue was opened
 - ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1048) [#1048](https://github.com/propensive/soundness/issues/1048) — iridescence `Hsl.saturate`/`desaturate`/`rotate`/`pure` return `Hsv` instead of `Hsl
 - ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1049) [#1049](https://github.com/propensive/soundness/issues/1049) — geodesy `Compass.points8` lists `Southwest` twice; `Northwest` is missing
 - ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1050) [#1050](https://github.com/propensive/soundness/issues/1050) — caesura `Dsv` showable only quotes cells containing the quote char, not the delimiter or newlines
@@ -206,8 +208,8 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 ### [rcardin/yaes](https://github.com/rcardin/yaes)
 
 - ![status](https://img.shields.io/github/issues/detail/state/rcardin/yaes/253) [#253](https://github.com/rcardin/yaes/issues/253) — yaes-core: `Raise.catching[E]` misses subclasses of `E` (uses `==` instead of `isInstance`)
-- ![status](https://img.shields.io/github/issues/detail/state/rcardin/yaes/254) [#254](https://github.com/rcardin/yaes/issues/254) — yaes-core: `JvmStructuredScope.scopes` uses `mutable.Map` from concurrent virtual threads
-- ![status](https://img.shields.io/github/issues/detail/state/rcardin/yaes/255) [#255](https://github.com/rcardin/yaes/issues/255) — yaes-core: `Var` CAS loop uses Scala `==` (structural) instead of `eq` (reference) — ABA-prone
+- ~~![status](https://img.shields.io/github/issues/detail/state/rcardin/yaes/254) [#254](https://github.com/rcardin/yaes/issues/254) — yaes-core: `JvmStructuredScope.scopes` uses `mutable.Map` from concurrent virtual threads~~ — **closed (FP):** agent looked at a local fork branch; `JvmStructuredScope` does not exist in upstream
+- ~~![status](https://img.shields.io/github/issues/detail/state/rcardin/yaes/255) [#255](https://github.com/rcardin/yaes/issues/255) — yaes-core: `Var` CAS loop uses Scala `==` (structural) instead of `eq` (reference) — ABA-prone~~ — **closed (FP):** agent looked at a local fork branch; `Var` does not exist in upstream
 
 ### [scala/scala3](https://github.com/scala/scala3)
 
