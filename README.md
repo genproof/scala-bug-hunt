@@ -4,7 +4,7 @@ A list of bugs I found in the Scala ecosystem with an AI-assisted fuzzing setup 
 
 Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + latest library version). If something turns out not to be a real bug, sorry — just close it; I monitor every issue and will pick it up.
 
-> **2026-05-17 retroactive audit.** All filings were re-run through a cross-vendor adversarial gate (codex prover + claude skeptic + 2 independent judges). 15 issues marked ~~struck through~~ below have been self-closed: 8 are false positives the gate flagged (and I've apologised in each thread), 2 yaes ones were the agent reading a stale local fork, and 1 soundness one was already-fixed upstream before filing. The remaining 168 issues survived the gate, and **9 additional issues were filed after the audit** — each strict-verified by adversarial gate + `scala-cli` runtime reproduction.
+> **2026-05-17 retroactive audit.** All filings were re-run through a cross-vendor adversarial gate (codex prover + claude skeptic + 2 independent judges). 15 issues marked ~~struck through~~ below have been self-closed: 8 are false positives the gate flagged (and I've apologised in each thread), 2 yaes ones were the agent reading a stale local fork, and 1 soundness one was already-fixed upstream before filing. The remaining 168 issues survived the gate, and **13 additional issues were filed after the audit** — each strict-verified by adversarial gate + `scala-cli` runtime reproduction.
 
 ## Issues filed
 
@@ -297,6 +297,7 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 - ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/720) [#720](https://github.com/takapi327/ldbc/issues/720) — [Bug]: VARCHAR rejects lengths > 255 at compile time (should allow up to 65535)
 - ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/731) [#731](https://github.com/takapi327/ldbc/issues/731) — CircuitBreaker HalfOpen admits multiple concurrent test requests (non-atomic state transition)
 - ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/732) [#732](https://github.com/takapi327/ldbc/issues/732) — Pool `resetConnection` commits pending transactions instead of rolling back (autoCommit set before rollback)
+- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/733) [#733](https://github.com/takapi327/ldbc/issues/733) — CharsetMapping cp850 has mblen=2 instead of mblen=1 (single-byte charset misclassified)
 
 ### [tarao/record4s](https://github.com/tarao/record4s)
 
@@ -331,6 +332,7 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 - ![status](https://img.shields.io/github/issues/detail/state/zio/zio/10883) [#10883](https://github.com/zio/zio/issues/10883) — Schedule.dayOfMonth(30) crashes with DateTimeException in months that don't have day 30
 - ![status](https://img.shields.io/github/issues/detail/state/zio/zio/10884) [#10884](https://github.com/zio/zio/issues/10884) — Queue.offerAll silently drops items when paired takers are already interrupted
 - ![status](https://img.shields.io/github/issues/detail/state/zio/zio/10885) [#10885](https://github.com/zio/zio/issues/10885) — Queue.Sliding and Hub.Sliding can spin indefinitely when offer/publish keeps losing the race after slide
+- ![status](https://img.shields.io/github/issues/detail/state/zio/zio/10936) [#10936](https://github.com/zio/zio/issues/10936) — TMap.takeFirst silently drops remaining bucket elements after match (key-collision data loss)
 
 ### [zio/zio-http](https://github.com/zio/zio-http)
 
@@ -358,6 +360,8 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 - ![status](https://img.shields.io/github/issues/detail/state/zio/zio-schema/1100) [#1100](https://github.com/zio/zio-schema/issues/1100) — MessagePack decoder: enum boundary check is off by one (ArrayIndexOutOfBoundsException for caseIndex == cases.length)
 - ![status](https://img.shields.io/github/issues/detail/state/zio/zio-schema/1101) [#1101](https://github.com/zio/zio-schema/issues/1101) — MessagePack Fallback decoder uses path label "either" in error, and the size error says "1 or 2" instead of "2 or 3"
 - ![status](https://img.shields.io/github/issues/detail/state/zio/zio-schema/1102) [#1102](https://github.com/zio/zio-schema/issues/1102) — Avro codec encodes ByteType as bare INT without a discriminator, so Schema[Byte] becomes Schema[Int] after roundtrip
+- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-schema/1108) [#1108](https://github.com/zio/zio-schema/issues/1108) — ThriftCodec streamEncoder shares mutable Encoder state across chunks (parallel streams interleave)
+- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-schema/1109) [#1109](https://github.com/zio/zio-schema/issues/1109) — ProtobufCodec Fallback decoder error references annotation companion object instead of field number
 
 
 ## How this was built
