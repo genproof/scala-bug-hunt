@@ -4,7 +4,7 @@ A list of bugs I found in the Scala ecosystem with an AI-assisted fuzzing setup 
 
 Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + latest library version). If something turns out not to be a real bug, sorry — just close it; I monitor every issue and will pick it up.
 
-> **2026-05-17 retroactive audit.** All filings were re-run through a cross-vendor adversarial gate (codex prover + claude skeptic + 2 independent judges). 15 issues marked ~~struck through~~ below have been self-closed: 8 are false positives the gate flagged (and I've apologised in each thread), 2 yaes ones were the agent reading a stale local fork, and 1 soundness one was already-fixed upstream before filing. The remaining 168 issues survived the gate, and **7 additional issues were filed after the audit** — each strict-verified by adversarial gate + `scala-cli` runtime reproduction.
+> **2026-05-17 retroactive audit.** All filings were re-run through a cross-vendor adversarial gate (codex prover + claude skeptic + 2 independent judges). 15 issues marked ~~struck through~~ below have been self-closed: 8 are false positives the gate flagged (and I've apologised in each thread), 2 yaes ones were the agent reading a stale local fork, and 1 soundness one was already-fixed upstream before filing. The remaining 168 issues survived the gate, and **9 additional issues were filed after the audit** — each strict-verified by adversarial gate + `scala-cli` runtime reproduction.
 
 ## Issues filed
 
@@ -130,6 +130,10 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 - ![status](https://img.shields.io/github/issues/detail/state/hedgehogqa/scala-hedgehog/307) [#307](https://github.com/hedgehogqa/scala-hedgehog/issues/307) — Seed.chooseLong overflows max - min + 2 and computes x % range + min - 1, producing values below min
 - ![status](https://img.shields.io/github/issues/detail/state/hedgehogqa/scala-hedgehog/308) [#308](https://github.com/hedgehogqa/scala-hedgehog/issues/308) — MersenneTwister64.hashCode only uses mti, ignoring the 312-element mt array
 
+### [kubuszok/hearth](https://github.com/kubuszok/hearth)
+
+- ![status](https://img.shields.io/github/issues/detail/state/kubuszok/hearth/268) [#268](https://github.com/kubuszok/hearth/issues/268) — NonEmptyMap.map can produce duplicate keys, silently dropping entries on ListMap conversion
+
 ### [http4s/http4s](https://github.com/http4s/http4s)
 
 - ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7835) [#7835](https://github.com/http4s/http4s/issues/7835) — HttpDate.fromInstant truncates negative epochs toward zero, off by one second before 1970
@@ -160,6 +164,7 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 - ![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/466) [#466](https://github.com/kitlangton/neotype/issues/466) — LambdaCompiler.isDefinedAt silently turns Left(error) into false — collect/filter/exists drop elements without surfacing comptime errors
 - ~~![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/467) [#467](https://github.com/kitlangton/neotype/issues/467) — TermCompiler — TermIR.Throw uses raw throw inside flatMap, bypassing the Either error pipeline~~ — **closed (FP, gate audit 2026-05-17):** file's own author comments mark these compile-time throws as intentional
 - ![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/468) [#468](https://github.com/kitlangton/neotype/issues/468) — comptime LambdaCompiler discards match scrutinee — `(x => f(x) match ...)` matches against `x`, not `f(x)
+- ![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/473) [#473](https://github.com/kitlangton/neotype/issues/473) — MatchCompiler eagerly evaluates scrutinee, ignoring intervening MutableRef writes
 
 ### [lampepfl/gears](https://github.com/lampepfl/gears)
 
