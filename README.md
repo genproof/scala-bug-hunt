@@ -4,7 +4,7 @@ A list of bugs I found in the Scala ecosystem with an AI-assisted fuzzing setup 
 
 Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + latest library version). If something turns out not to be a real bug, sorry — just close it; I monitor every issue and will pick it up.
 
-> **2026-05-17 retroactive audit.** All filings were re-run through a cross-vendor adversarial gate (codex prover + claude skeptic + 2 independent judges). 11 issues marked ~~struck through~~ below have been self-closed: 8 are false positives the gate flagged (and I've apologised in each thread), 2 yaes ones were the agent reading a stale local fork, and 1 soundness one was already-fixed upstream before filing. The remaining 172 issues survived the gate, and **7 additional issues were filed after the audit** — each strict-verified by adversarial gate + `scala-cli` runtime reproduction.
+> **2026-05-17 retroactive audit.** All filings were re-run through a cross-vendor adversarial gate (codex prover + claude skeptic + 2 independent judges). 12 issues marked ~~struck through~~ below have been self-closed: 8 are false positives the gate flagged (and I've apologised in each thread), 2 yaes ones were the agent reading a stale local fork, and 1 soundness one was already-fixed upstream before filing. The remaining 171 issues survived the gate, and **7 additional issues were filed after the audit** — each strict-verified by adversarial gate + `scala-cli` runtime reproduction.
 
 ## Issues filed
 
@@ -143,7 +143,7 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 - ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7843) [#7843](https://github.com/http4s/http4s/issues/7843) — Retry-After delay-seconds parser throws NumberFormatException on overflow instead of returning ParseFailure
 - ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7844) [#7844](https://github.com/http4s/http4s/issues/7844) — Host header constructor and parser accept invalid port numbers (negative, > 65535)
 - ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7845) [#7845](https://github.com/http4s/http4s/issues/7845) — VirtualHost.wildcard allows regex injection through unescaped metacharacters
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7846) [#7846](https://github.com/http4s/http4s/issues/7846) — Caching middleware Expires arithmetic can overflow Long for large but finite lifetimes
+- ~~![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7846) [#7846](https://github.com/http4s/http4s/issues/7846) — Caching middleware Expires arithmetic can overflow Long for large but finite lifetimes~~ — **closed (FP, runtime audit 2026-05-18):** `scala.concurrent.duration.Duration` caps at ~292 years; the overflow scenario described isn't reachable from user code
 - ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7847) [#7847](https://github.com/http4s/http4s/issues/7847) — Throttle.defaultResponse silently drops the retryAfter parameter — no Retry-After header on 429
 - ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7848) [#7848](https://github.com/http4s/http4s/issues/7848) — VirtualHost.regex uses partial match instead of full match — host header spoofing
 - ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7849) [#7849](https://github.com/http4s/http4s/issues/7849) — Access-Control-Max-Age.Cache.apply bypasses the validation in fromLong
