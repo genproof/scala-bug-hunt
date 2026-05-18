@@ -4,7 +4,7 @@ A list of bugs I found in the Scala ecosystem with an AI-assisted fuzzing setup 
 
 Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + latest library version). If something turns out not to be a real bug, sorry — just close it; I monitor every issue and will pick it up.
 
-> **2026-05-17 retroactive audit.** All filings were re-run through a cross-vendor adversarial gate (codex prover + claude skeptic + 2 independent judges). 12 issues marked ~~struck through~~ below have been self-closed: 8 are false positives the gate flagged (and I've apologised in each thread), 2 yaes ones were the agent reading a stale local fork, and 1 soundness one was already-fixed upstream before filing. The remaining 171 issues survived the gate, and **7 additional issues were filed after the audit** — each strict-verified by adversarial gate + `scala-cli` runtime reproduction.
+> **2026-05-17 retroactive audit.** All filings were re-run through a cross-vendor adversarial gate (codex prover + claude skeptic + 2 independent judges). 15 issues marked ~~struck through~~ below have been self-closed: 8 are false positives the gate flagged (and I've apologised in each thread), 2 yaes ones were the agent reading a stale local fork, and 1 soundness one was already-fixed upstream before filing. The remaining 168 issues survived the gate, and **7 additional issues were filed after the audit** — each strict-verified by adversarial gate + `scala-cli` runtime reproduction.
 
 ## Issues filed
 
@@ -24,7 +24,7 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 - ![status](https://img.shields.io/github/issues/detail/state/business4s/decisions4s/101) [#101](https://github.com/business4s/decisions4s/issues/101) — MarkdownRenderer emits rows with inconsistent column counts when annotations are mixed
 - ![status](https://img.shields.io/github/issues/detail/state/business4s/decisions4s/102) [#102](https://github.com/business4s/decisions4s/issues/102) — Distinct hit policy uses Set deduplication, can silently accept +0.0 vs -0.0 as identical
 - ![status](https://img.shields.io/github/issues/detail/state/business4s/decisions4s/103) [#103](https://github.com/business4s/decisions4s/issues/103) — DiagnosticsPrinter throws empty.max when constructed for a decision table with zero input fields
-- ![status](https://img.shields.io/github/issues/detail/state/business4s/decisions4s/104) [#104](https://github.com/business4s/decisions4s/issues/104) — FromFeel numeric readers throw bare MatchError on non-numeric inputs, no field/expression context
+- ~~![status](https://img.shields.io/github/issues/detail/state/business4s/decisions4s/104) [#104](https://github.com/business4s/decisions4s/issues/104) — FromFeel numeric readers throw bare MatchError on non-numeric inputs, no field/expression context~~ — **closed (FP, runtime audit 2026-05-18):** upstream now raises IllegalArgumentException with full context, not the bare MatchError I claimed
 
 ### [business4s/workflows4s](https://github.com/business4s/workflows4s)
 
@@ -209,7 +209,7 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 
 ### [rcardin/raise4s](https://github.com/rcardin/raise4s)
 
-- ![status](https://img.shields.io/github/issues/detail/state/rcardin/raise4s/134) [#134](https://github.com/rcardin/raise4s/issues/134) — accumulate silently drops accumulated errors when no Value.value is read
+- ~~![status](https://img.shields.io/github/issues/detail/state/rcardin/raise4s/134) [#134](https://github.com/rcardin/raise4s/issues/134) — accumulate silently drops accumulated errors when no Value.value is read~~ — **closed (FP, runtime audit 2026-05-18):** `accumulate`'s ScalaDoc explicitly documents that errors are raised only on access — silent drop on unused values is by-design lazy semantics
 
 ### [rcardin/yaes](https://github.com/rcardin/yaes)
 
@@ -330,7 +330,7 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 ### [zio/zio-http](https://github.com/zio/zio-http)
 
 - ![status](https://img.shields.io/github/issues/detail/state/zio/zio-http/4130) [#4130](https://github.com/zio/zio-http/issues/4130) — CORS middleware rejects actual cross-origin requests when method is not in allowedMethods
-- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-http/4131) [#4131](https://github.com/zio/zio-http/issues/4131) — ServerSentEvent.encoded silently turns newlines in eventType / id into spaces
+- ~~![status](https://img.shields.io/github/issues/detail/state/zio/zio-http/4131) [#4131](https://github.com/zio/zio-http/issues/4131) — ServerSentEvent.encoded silently turns newlines in eventType / id into spaces~~ — **closed (FP, runtime audit 2026-05-18):** upstream tests assert the current space-joining behavior; newline-containing eventType/id is treated as out-of-contract and silently normalized by design
 - ![status](https://img.shields.io/github/issues/detail/state/zio/zio-http/4132) [#4132](https://github.com/zio/zio-http/issues/4132) — PathCodec.Annotated.equals is asymmetric and case class is missing a matching hashCode
 
 ### [zio/zio-json](https://github.com/zio/zio-json)
