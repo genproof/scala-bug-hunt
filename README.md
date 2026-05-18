@@ -4,7 +4,7 @@ A list of bugs I found in the Scala ecosystem with an AI-assisted fuzzing setup 
 
 Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + latest library version). If something turns out not to be a real bug, sorry — just close it; I monitor every issue and will pick it up.
 
-> **2026-05-17 retroactive audit.** All filings were re-run through a cross-vendor adversarial gate (codex prover + claude skeptic + 2 independent judges). 11 issues marked ~~struck through~~ below have been self-closed: 8 are false positives the gate flagged (and I've apologised in each thread), 2 yaes ones were the agent reading a stale local fork, and 1 soundness one was already-fixed upstream before filing. The remaining 172 issues survived the gate.
+> **2026-05-17 retroactive audit.** All filings were re-run through a cross-vendor adversarial gate (codex prover + claude skeptic + 2 independent judges). 11 issues marked ~~struck through~~ below have been self-closed: 8 are false positives the gate flagged (and I've apologised in each thread), 2 yaes ones were the agent reading a stale local fork, and 1 soundness one was already-fixed upstream before filing. The remaining 172 issues survived the gate, and **7 additional issues were filed after the audit** — each strict-verified by adversarial gate + `scala-cli` runtime reproduction.
 
 ## Issues filed
 
@@ -98,6 +98,12 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 - ![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/266) [#266](https://github.com/FunktionalIO/pillars/issues/266) — migrateModule sanitization produces table names with `-`, which violates the DatabaseTable constraint (silently, via `.assume`)
 - ![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/267) [#267](https://github.com/FunktionalIO/pillars/issues/267) — db-doobie DatabaseConfig.toHikariConfig silently drops systemSchema, appSchema, and debug
 - ~~![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/268) [#268](https://github.com/FunktionalIO/pillars/issues/268) — db-skunk Typer.Strategy encoder emits MixedCase, decoder lowercases — round-trip OK but inconsistent with rest of codec~~ — **closed (FP, gate audit 2026-05-17):** round-trip works; sibling `RedactionStrategy` codec uses the same mixed-case-encode / lowercase-decode pattern
+
+### [getkyo/kyo](https://github.com/getkyo/kyo)
+
+- ![status](https://img.shields.io/github/issues/detail/state/getkyo/kyo/1621) [#1621](https://github.com/getkyo/kyo/issues/1621) — TMap.contains ignores the `key` parameter (collapses to `!_.isEmpty`)
+- ![status](https://img.shields.io/github/issues/detail/state/getkyo/kyo/1622) [#1622](https://github.com/getkyo/kyo/issues/1622) — TMap.initWith silently drops the function parameter and returns `TMap[K, V]` instead of `A`
+- ![status](https://img.shields.io/github/issues/detail/state/getkyo/kyo/1623) [#1623](https://github.com/getkyo/kyo/issues/1623) — Schedule.linear produces exponential (powers-of-two) delays instead of linear (1, 2, 4, 8, 16…)
 
 ### [ghostdogpr/caliban](https://github.com/ghostdogpr/caliban)
 
@@ -242,6 +248,7 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 ### [softwaremill/ox](https://github.com/softwaremill/ox)
 
 - ![status](https://img.shields.io/github/issues/detail/state/softwaremill/ox/439) [#439](https://github.com/softwaremill/ox/issues/439) — Flow.range with a negative step emits only the first element
+- ![status](https://img.shields.io/github/issues/detail/state/softwaremill/ox/442) [#442](https://github.com/softwaremill/ox/issues/442) — AdaptiveRetry stops retrying on `Left` when `shouldPayFailureCost` is false (free retry intended)
 
 ### [softwaremill/quicklens](https://github.com/softwaremill/quicklens)
 
@@ -283,6 +290,8 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 - ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/718) [#718](https://github.com/takapi327/ldbc/issues/718) — [Bug]: SSL.withTLSParameters drops fallbackOk, withFallback drops tlsParameters when chained
 - ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/719) [#719](https://github.com/takapi327/ldbc/issues/719) — [Bug]: MysqlCharset.isOkayForVersion comparison is inverted (gb18030 rejected on MySQL 8.0)
 - ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/720) [#720](https://github.com/takapi327/ldbc/issues/720) — [Bug]: VARCHAR rejects lengths > 255 at compile time (should allow up to 65535)
+- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/731) [#731](https://github.com/takapi327/ldbc/issues/731) — CircuitBreaker HalfOpen admits multiple concurrent test requests (non-atomic state transition)
+- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/732) [#732](https://github.com/takapi327/ldbc/issues/732) — Pool `resetConnection` commits pending transactions instead of rolling back (autoCommit set before rollback)
 
 ### [tarao/record4s](https://github.com/tarao/record4s)
 
@@ -296,6 +305,10 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 ### [typelevel/skunk](https://github.com/typelevel/skunk)
 
 - ![status](https://img.shields.io/github/issues/detail/state/typelevel/skunk/1295) [#1295](https://github.com/typelevel/skunk/issues/1295) — timestamptz precision error message has typo "timestampz" (missing "t")
+
+### [wvlet/airframe](https://github.com/wvlet/airframe)
+
+- ![status](https://img.shields.io/github/issues/detail/state/wvlet/airframe/4181) [#4181](https://github.com/wvlet/airframe/issues/4181) — BigIntCodec / BigIntegerCodec silently truncates large negative BigInts to their low 64 bits
 
 ### [wvlet/wvlet](https://github.com/wvlet/wvlet)
 
