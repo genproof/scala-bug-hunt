@@ -105,7 +105,7 @@ Issues are listed by priority below — Scala 3 compiler crashes first (broadest
 
 - ![status](https://img.shields.io/github/issues/detail/state/softwaremill/sttp/2880) [#2880](https://github.com/softwaremill/sttp/issues/2880) — Several `ByteBuffer.array()` calls don't check `hasArray()` and ignore position/limit
 - ![status](https://img.shields.io/github/issues/detail/state/softwaremill/sttp/2881) [#2881](https://github.com/softwaremill/sttp/issues/2881) — toCurl drops multipart filename, content-type, and per-part headers
-- ![status](https://img.shields.io/github/issues/detail/state/softwaremill/sttp/2882) [#2882](https://github.com/softwaremill/sttp/issues/2882) — DigestAuthenticator silently falls through to qop-unaware mode when server sends `qop="auth,auth-int"
+- ![status](https://img.shields.io/github/issues/detail/state/softwaremill/sttp/2882) [#2882](https://github.com/softwaremill/sttp/issues/2882) — DigestAuthenticator silently falls through to qop-unaware mode when server sends `qop="auth,auth-int"`
 
 ### [softwaremill/tapir](https://github.com/softwaremill/tapir)
 
@@ -166,9 +166,9 @@ Issues are listed by priority below — Scala 3 compiler crashes first (broadest
 
 ### [FunktionalIO/pillars](https://github.com/FunktionalIO/pillars)
 
-- ![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/259) [#259](https://github.com/FunktionalIO/pillars/issues/259) — rabbitmq-fs2` config conversion silently drops `automaticTopologyRecovery
-- ![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/260) [#260](https://github.com/FunktionalIO/pillars/issues/260) — flags` `FlagNotFound` error message is missing a space — `Flag my-featurenot found
-- ![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/261) [#261](https://github.com/FunktionalIO/pillars/issues/261) — Metrics` response-body-size recorder discards its `IO` via `Option.foreach
+- ![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/259) [#259](https://github.com/FunktionalIO/pillars/issues/259) — `rabbitmq-fs2` config conversion silently drops `automaticTopologyRecovery`
+- ![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/260) [#260](https://github.com/FunktionalIO/pillars/issues/260) — `flags` `FlagNotFound` error message is missing a space — `Flag my-featurenot found`
+- ![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/261) [#261](https://github.com/FunktionalIO/pillars/issues/261) — `Metrics` response-body-size recorder discards its `IO` via `Option.foreach`
 - ![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/262) [#262](https://github.com/FunktionalIO/pillars/issues/262) — db-skunk RedactionStrategy encoder writes "OptIn" while the decoder lowercases input and matches "optin"
 - ![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/263) [#263](https://github.com/FunktionalIO/pillars/issues/263) — Metrics.responseBodySize double-wraps m.eval, so the recorder.record IO is never run
 - ![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/264) [#264](https://github.com/FunktionalIO/pillars/issues/264) — HTTP client metrics middleware never records request or response body size histograms
@@ -228,13 +228,13 @@ Issues are listed by priority below — Scala 3 compiler crashes first (broadest
 ### [propensive/soundness](https://github.com/propensive/soundness)
 
 - ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1041) [#1041](https://github.com/propensive/soundness/issues/1041) — hypotenuse `addS*` overflow check misses negative-overflow cases
-- ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1042) [#1042](https://github.com/propensive/soundness/issues/1042) — hypotenuse `Short.**` truncates its `Double` result through `.toShort
+- ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1042) [#1042](https://github.com/propensive/soundness/issues/1042) — hypotenuse `Short.**` truncates its `Double` result through `.toShort`
 - ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1043) [#1043](https://github.com/propensive/soundness/issues/1043) — hypotenuse `Byte`/`Short` `hex`/`octal`/`binary` sign-extend to 32 bits
 - ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1044) [#1044](https://github.com/propensive/soundness/issues/1044) — hypotenuse `Float`/`Double` `%%` returns wrong result for negative divisors
 - ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1045) [#1045](https://github.com/propensive/soundness/issues/1045) — quantitative Temperature + Quantity[Rankines[1]] uses inverted 9/5 factor (should be 5/9)
 - ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1046) [#1046](https://github.com/propensive/soundness/issues/1046) — gossamer `levenshteinDistance` returns 0 when the left string is empty
 - ~~![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1047) [#1047](https://github.com/propensive/soundness/issues/1047) — jacinta `Json.delete` allocates `Array[String]` for the values column~~ — **closed (stale):** real bug, but already fixed in commit `3213c2e24` before the issue was opened
-- ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1048) [#1048](https://github.com/propensive/soundness/issues/1048) — iridescence `Hsl.saturate`/`desaturate`/`rotate`/`pure` return `Hsv` instead of `Hsl
+- ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1048) [#1048](https://github.com/propensive/soundness/issues/1048) — iridescence `Hsl.saturate`/`desaturate`/`rotate`/`pure` return `Hsv` instead of `Hsl`
 - ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1049) [#1049](https://github.com/propensive/soundness/issues/1049) — geodesy `Compass.points8` lists `Southwest` twice; `Northwest` is missing
 - ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1050) [#1050](https://github.com/propensive/soundness/issues/1050) — caesura `Dsv` showable only quotes cells containing the quote char, not the delimiter or newlines
 - ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1051) [#1051](https://github.com/propensive/soundness/issues/1051) — parasite Task.apply silently ignores the daemon parameter, hardcodes daemon = false
@@ -292,7 +292,7 @@ Issues are listed by priority below — Scala 3 compiler crashes first (broadest
 - ~~![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/465) [#465](https://github.com/kitlangton/neotype/issues/465) — CaseClassBuilder.newInstance silently swallows constructor exceptions and returns a fake value~~ — **closed (FP, gate audit 2026-05-17):** three fallback arms read as deliberate partial-evaluation; no runtime reproducer
 - ![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/466) [#466](https://github.com/kitlangton/neotype/issues/466) — LambdaCompiler.isDefinedAt silently turns Left(error) into false — collect/filter/exists drop elements without surfacing comptime errors
 - ~~![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/467) [#467](https://github.com/kitlangton/neotype/issues/467) — TermCompiler — TermIR.Throw uses raw throw inside flatMap, bypassing the Either error pipeline~~ — **closed (FP, gate audit 2026-05-17):** file's own author comments mark these compile-time throws as intentional
-- ![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/468) [#468](https://github.com/kitlangton/neotype/issues/468) — comptime LambdaCompiler discards match scrutinee — `(x => f(x) match ...)` matches against `x`, not `f(x)
+- ![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/468) [#468](https://github.com/kitlangton/neotype/issues/468) — comptime LambdaCompiler discards match scrutinee — `(x => f(x) match ...)` matches against `x`, not `f(x)`
 - ![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/473) [#473](https://github.com/kitlangton/neotype/issues/473) — MatchCompiler eagerly evaluates scrutinee, ignoring intervening MutableRef writes
 
 ### [com-lihaoyi/upickle](https://github.com/com-lihaoyi/upickle)
