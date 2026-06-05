@@ -4,49 +4,37 @@ A list of bugs I found in the Scala ecosystem with an AI-assisted fuzzing setup 
 
 Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + latest library version). If something turns out not to be a real bug, sorry — just close it; I monitor every issue and will pick it up.
 
+## Stats (GitHub-verified, 2026-06-05)
+
+| Metric | Value |
+|---|---|
+| Issues filed | **204** across **53** Scala projects |
+| Closed | **93 (~47%)** — ~78 fixed or accepted by maintainers, 15 withdrawn by me |
+| Open | 104 |
+| **AI-slop (false positives)** | **14 (~7%)** — all self-found via the adversarial gate + runtime audit and self-closed with an apology |
+| scala/scala3 compiler crashes | **9** (4 already fixed upstream, merged PRs) |
+
+Issues are listed by priority below — Scala 3 compiler crashes first (broadest impact), then the rest.
+
 > **2026-05-17 retroactive audit.** All filings were re-run through a cross-vendor adversarial gate (codex prover + claude skeptic + 2 independent judges). 15 issues marked ~~struck through~~ below have been self-closed: 8 are false positives the gate flagged (and I've apologised in each thread), 2 yaes ones were the agent reading a stale local fork, and 1 soundness one was already-fixed upstream before filing. The remaining 168 issues survived the gate, and **13 additional issues were filed after the audit** — each strict-verified by adversarial gate + `scala-cli` runtime reproduction.
 
 ## Issues filed
 
-### [armanbilge/calico](https://github.com/armanbilge/calico)
+### [scala/scala3](https://github.com/scala/scala3)
 
-- ~~![status](https://img.shields.io/github/issues/detail/state/armanbilge/calico/470) [#470](https://github.com/armanbilge/calico/issues/470) — KeyedChildren publishes the new active map before new nodes are acquired~~ — **closed (FP, gate audit 2026-05-17):** cats-effect `*>` short-circuits before the unsafe lookup; mutable-map ref behavior moots the leak claim
+> **Compiler crashes — the highest-value class of finding here (reference Scala 3 compiler, not library logic).** 9 issues: **4 already closed as fixed upstream with merged PRs**, 0 false positives (**0% AI-slop**). Sorted by priority (impact × fix-cost): invalid-bytecode and crashes-on-valid-code first; fixed and narrow edge cases last.
 
-### [AugustNagro/magnum](https://github.com/AugustNagro/magnum)
+- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/25725) [#25725](https://github.com/scala/scala3/issues/25725) — VerifyError: erased context-function parameter before non-erased produces invalid bytecode — **fixed (PR #25751)**
+- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/25727) [#25727](https://github.com/scala/scala3/issues/25727) — Nested `boundary`: inner block silently catches `break` meant for outer boundary via type inference — *open, disputed (maintainers lean by-design; `-Wnonunit-statement` lint suggested)*
+- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/25724) [#25724](https://github.com/scala/scala3/issues/25724) — Recursive macro splice causes StackOverflowError during inlining phase — **accepted, fix in #25937**
+- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/25246) [#25246](https://github.com/scala/scala3/issues/25246) — Crash: AssertionError in `TypeOps.dominators` with complex context bounds and quoted expression — *open, awaiting maintainer*
+- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/26037) [#26037](https://github.com/scala/scala3/issues/26037) — Crash: AssertionError "asTerm called on not-a-Term type T" when exporting members of a cyclic opaque type companion — *open, retest-on-nightly requested*
+- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/25244) [#25244](https://github.com/scala/scala3/issues/25244) — Crash in `tpd.singleton` on `PreviousErrorType` during error recovery (inline match + quoted pattern with unresolved import) — **accepted, maintainer-reproduced, fix WIP**
+- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/25726) [#25726](https://github.com/scala/scala3/issues/25726) — AssertionError in erasure when overriding generic trait method with erased using clause before type-param argument — **fixed (PRs #25923, #26047)**
+- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/25723) [#25723](https://github.com/scala/scala3/issues/25723) — Duplicate enum name (simple + parametric) causes assertion failure — **fixed (PR #26205)**
+- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/25248) [#25248](https://github.com/scala/scala3/issues/25248) — Parser crash (AssertionError) when line comment hides `then` in for-generator inside new argument — **fixed (PR #25253)**
 
-- ~~![status](https://img.shields.io/github/issues/detail/state/AugustNagro/magnum/148) [#148](https://github.com/AugustNagro/magnum/issues/148) — Transactor.transact catches every Throwable, including OOM and StackOverflow~~ — **closed (FP, gate audit 2026-05-17):** broad `case t =>` is intentional — maintainer touched this block in #126 and kept the wide arm
-- ~~![status](https://img.shields.io/github/issues/detail/state/AugustNagro/magnum/149) [#149](https://github.com/AugustNagro/magnum/issues/149) — ScalaBigDecimalCodec.readSingle throws on SQL NULL instead of returning null~~ — **closed (FP, gate audit 2026-05-17):** framework contract — `T` codec throws on NULL, `Option[T]` handles it via `readSingleOption`
-- ![status](https://img.shields.io/github/issues/detail/state/AugustNagro/magnum/150) [#150](https://github.com/AugustNagro/magnum/issues/150) — Spec.orderBy / seek concatenate raw column names into SQL
-- ![status](https://img.shields.io/github/issues/detail/state/AugustNagro/magnum/151) [#151](https://github.com/AugustNagro/magnum/issues/151) — MagUser test fixture overrides equals but not hashCode (only affects tests)
-
-### [business4s/decisions4s](https://github.com/business4s/decisions4s)
-
-- ![status](https://img.shields.io/github/issues/detail/state/business4s/decisions4s/101) [#101](https://github.com/business4s/decisions4s/issues/101) — MarkdownRenderer emits rows with inconsistent column counts when annotations are mixed
-- ![status](https://img.shields.io/github/issues/detail/state/business4s/decisions4s/102) [#102](https://github.com/business4s/decisions4s/issues/102) — Distinct hit policy uses Set deduplication, can silently accept +0.0 vs -0.0 as identical
-- ![status](https://img.shields.io/github/issues/detail/state/business4s/decisions4s/103) [#103](https://github.com/business4s/decisions4s/issues/103) — DiagnosticsPrinter throws empty.max when constructed for a decision table with zero input fields
-- ~~![status](https://img.shields.io/github/issues/detail/state/business4s/decisions4s/104) [#104](https://github.com/business4s/decisions4s/issues/104) — FromFeel numeric readers throw bare MatchError on non-numeric inputs, no field/expression context~~ — **closed (FP, runtime audit 2026-05-18):** upstream now raises IllegalArgumentException with full context, not the bare MatchError I claimed
-
-### [business4s/workflows4s](https://github.com/business4s/workflows4s)
-
-- ![status](https://img.shields.io/github/issues/detail/state/business4s/workflows4s/257) [#257](https://github.com/business4s/workflows4s/issues/257) — ProceedingVisitor.onParallel calls .get on Option that can be None when one branch errored and another is still partial
-- ![status](https://img.shields.io/github/issues/detail/state/business4s/workflows4s/258) [#258](https://github.com/business4s/workflows4s/issues/258) — extractFirstInterruption drops the third step in 3-element interruption sequences (off-by-one threshold)
-- ![status](https://img.shields.io/github/issues/detail/state/business4s/workflows4s/259) [#259](https://github.com/business4s/workflows4s/issues/259) — RenderUtils.hasStarted returns true for a Loop that hasn't started any iteration
-
-### [circe/circe](https://github.com/circe/circe)
-
-- ![status](https://img.shields.io/github/issues/detail/state/circe/circe/2457) [#2457](https://github.com/circe/circe/issues/2457) — BiggerDecimal.integralIsValidLong returns true for "-", "+", "a" and crashes on ""
-- ![status](https://img.shields.io/github/issues/detail/state/circe/circe/2458) [#2458](https://github.com/circe/circe/issues/2458) — Printer with empty indent swaps rbraceLeft and rbraceRight (ConstantPieces path)
-- ![status](https://img.shields.io/github/issues/detail/state/circe/circe/2459) [#2459](https://github.com/circe/circe/issues/2459) — Printer indents content after `}` and `]` at child depth instead of parent depth
-
-### [com-lihaoyi/fansi](https://github.com/com-lihaoyi/fansi)
-
-- ![status](https://img.shields.io/github/issues/detail/state/com-lihaoyi/fansi/139) [#139](https://github.com/com-lihaoyi/fansi/issues/139) — Str.overlayAll error message prints end where start should appear
-- ![status](https://img.shields.io/github/issues/detail/state/com-lihaoyi/fansi/140) [#140](https://github.com/com-lihaoyi/fansi/issues/140) — Attrs.Multiple.equals uses reference equality on attrs while hashCode is structural
-
-### [com-lihaoyi/geny](https://github.com/com-lihaoyi/geny)
-
-- ![status](https://img.shields.io/github/issues/detail/state/com-lihaoyi/geny/104) [#104](https://github.com/com-lihaoyi/geny/issues/104) — Bytes overrides equals but not hashCode, breaking HashMap/HashSet
-- ![status](https://img.shields.io/github/issues/detail/state/com-lihaoyi/geny/105) [#105](https://github.com/com-lihaoyi/geny/issues/105) — Generator.maxBy / minBy silently return null on empty generators
+## Security & data-loss
 
 ### [com-lihaoyi/scalasql](https://github.com/com-lihaoyi/scalasql)
 
@@ -58,10 +46,100 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 - ![status](https://img.shields.io/github/issues/detail/state/com-lihaoyi/scalasql/118) [#118](https://github.com/com-lihaoyi/scalasql/issues/118) — startsWith / endsWith / contains do not escape LIKE wildcards in user input
 - ![status](https://img.shields.io/github/issues/detail/state/com-lihaoyi/scalasql/119) [#119](https://github.com/com-lihaoyi/scalasql/issues/119) — Identifier escape() in every dialect leaves inner delimiter chars unescaped
 
-### [com-lihaoyi/upickle](https://github.com/com-lihaoyi/upickle)
+### [takapi327/ldbc](https://github.com/takapi327/ldbc)
 
-- ![status](https://img.shields.io/github/issues/detail/state/com-lihaoyi/upickle/702) [#702](https://github.com/com-lihaoyi/upickle/issues/702) — MsgPackReader silently returns empty Array/Map for Array32/Map32 with length >= 2^31
-- ![status](https://img.shields.io/github/issues/detail/state/com-lihaoyi/upickle/703) [#703](https://github.com/com-lihaoyi/upickle/issues/703) — ujson silently accepts invalid hex digits in \uXXXX escapes (g, X, Z map to 0)
+- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/710) [#710](https://github.com/takapi327/ldbc/issues/710) — [Bug]: PooledDataSource.validateConnection uses handleError, dropping debug log effect
+- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/711) [#711](https://github.com/takapi327/ldbc/issues/711) — [Bug]: buildBatchQuery splits on case-sensitive "VALUES", breaks for lowercase "values"
+- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/712) [#712](https://github.com/takapi327/ldbc/issues/712) — [Bug]: Statement.execute throws MatchError for SHOW/DESCRIBE/EXPLAIN and other result-set queries
+- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/713) [#713](https://github.com/takapi327/ldbc/issues/713) — [Bug]: DataTypeParser.mediumblobType produces DataType.TINYBLOB() instead of MEDIUMBLOB()
+- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/714) [#714](https://github.com/takapi327/ldbc/issues/714) — [Bug]: ComStmtExecutePacket encoder uses uint24L for parameter types instead of uint16L (MySQL binary protocol violation)
+- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/715) [#715](https://github.com/takapi327/ldbc/issues/715) — [Bug]: SharedResultSet.isFirst returns true for any row past the first, not just row 1
+- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/716) [#716](https://github.com/takapi327/ldbc/issues/716) — [Bug]: Parameter.string SQL escaping is incomplete (missing NUL/CR/LF/Ctrl-Z/backspace) and orders quote-escape before backslash-escape
+- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/717) [#717](https://github.com/takapi327/ldbc/issues/717) — [Bug]: DataTypeParser.doubleType produces DataType.FLOAT (and DataType.DOUBLE doesn't exist in the model)
+- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/718) [#718](https://github.com/takapi327/ldbc/issues/718) — [Bug]: SSL.withTLSParameters drops fallbackOk, withFallback drops tlsParameters when chained
+- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/719) [#719](https://github.com/takapi327/ldbc/issues/719) — [Bug]: MysqlCharset.isOkayForVersion comparison is inverted (gb18030 rejected on MySQL 8.0)
+- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/720) [#720](https://github.com/takapi327/ldbc/issues/720) — [Bug]: VARCHAR rejects lengths > 255 at compile time (should allow up to 65535)
+- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/731) [#731](https://github.com/takapi327/ldbc/issues/731) — CircuitBreaker HalfOpen admits multiple concurrent test requests (non-atomic state transition)
+- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/732) [#732](https://github.com/takapi327/ldbc/issues/732) — Pool `resetConnection` commits pending transactions instead of rolling back (autoCommit set before rollback)
+- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/733) [#733](https://github.com/takapi327/ldbc/issues/733) — CharsetMapping cp850 has mblen=2 instead of mblen=1 (single-byte charset misclassified)
+
+### [http4s/http4s](https://github.com/http4s/http4s)
+
+- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7835) [#7835](https://github.com/http4s/http4s/issues/7835) — HttpDate.fromInstant truncates negative epochs toward zero, off by one second before 1970
+- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7836) [#7836](https://github.com/http4s/http4s/issues/7836) — Content-Range parser and constructor accept invalid ranges where first > last
+- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7837) [#7837](https://github.com/http4s/http4s/issues/7837) — Set-Cookie Max-Age parser rejects negative values that RFC 6265 specifies as valid
+- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7838) [#7838](https://github.com/http4s/http4s/issues/7838) — UriCoding.encode sign-extends bytes >= 0x80 when calling toSkip, breaking custom predicates for non-ASCII
+- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7839) [#7839](https://github.com/http4s/http4s/issues/7839) — HttpsRedirect middleware bakes the port into the hostname (or drops it entirely) in the redirect Location
+- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7840) [#7840](https://github.com/http4s/http4s/issues/7840) — CORS default policy allows PUT/PATCH/DELETE despite docstring saying GET, HEAD, POST only
+- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7841) [#7841](https://github.com/http4s/http4s/issues/7841) — RelaxedCookies parser accepts DEL (0x7F) and C1 control characters in cookie values
+- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7842) [#7842](https://github.com/http4s/http4s/issues/7842) — Keep-Alive reservedTokens has typo "token" instead of "timeout"
+- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7843) [#7843](https://github.com/http4s/http4s/issues/7843) — Retry-After delay-seconds parser throws NumberFormatException on overflow instead of returning ParseFailure
+- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7844) [#7844](https://github.com/http4s/http4s/issues/7844) — Host header constructor and parser accept invalid port numbers (negative, > 65535)
+- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7845) [#7845](https://github.com/http4s/http4s/issues/7845) — VirtualHost.wildcard allows regex injection through unescaped metacharacters
+- ~~![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7846) [#7846](https://github.com/http4s/http4s/issues/7846) — Caching middleware Expires arithmetic can overflow Long for large but finite lifetimes~~ — **closed (FP, runtime audit 2026-05-18):** `scala.concurrent.duration.Duration` caps at ~292 years; the overflow scenario described isn't reachable from user code
+- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7847) [#7847](https://github.com/http4s/http4s/issues/7847) — Throttle.defaultResponse silently drops the retryAfter parameter — no Retry-After header on 429
+- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7848) [#7848](https://github.com/http4s/http4s/issues/7848) — VirtualHost.regex uses partial match instead of full match — host header spoofing
+- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7849) [#7849](https://github.com/http4s/http4s/issues/7849) — Access-Control-Max-Age.Cache.apply bypasses the validation in fromLong
+
+### [zio/zio-protoquill](https://github.com/zio/zio-protoquill)
+
+- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-protoquill/747) [#747](https://github.com/zio/zio-protoquill/issues/747) — transaction commit/rollback wrapped in ZIO.succeed turns JDBC errors into unhandled defects
+- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-protoquill/748) [#748](https://github.com/zio/zio-protoquill/issues/748) — JdbcContext.probe leaks the JDBC Statement (never closed)
+- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-protoquill/749) [#749](https://github.com/zio/zio-protoquill/issues/749) — handleSingleResult silently swallows the multiple-row warning
+- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-protoquill/750) [#750](https://github.com/zio/zio-protoquill/issues/750) — String.startsWith / endsWith / contains compile to LIKE without escaping wildcards
+
+### [AugustNagro/magnum](https://github.com/AugustNagro/magnum)
+
+- ~~![status](https://img.shields.io/github/issues/detail/state/AugustNagro/magnum/148) [#148](https://github.com/AugustNagro/magnum/issues/148) — Transactor.transact catches every Throwable, including OOM and StackOverflow~~ — **closed (FP, gate audit 2026-05-17):** broad `case t =>` is intentional — maintainer touched this block in #126 and kept the wide arm
+- ~~![status](https://img.shields.io/github/issues/detail/state/AugustNagro/magnum/149) [#149](https://github.com/AugustNagro/magnum/issues/149) — ScalaBigDecimalCodec.readSingle throws on SQL NULL instead of returning null~~ — **closed (FP, gate audit 2026-05-17):** framework contract — `T` codec throws on NULL, `Option[T]` handles it via `readSingleOption`
+- ![status](https://img.shields.io/github/issues/detail/state/AugustNagro/magnum/150) [#150](https://github.com/AugustNagro/magnum/issues/150) — Spec.orderBy / seek concatenate raw column names into SQL
+- ![status](https://img.shields.io/github/issues/detail/state/AugustNagro/magnum/151) [#151](https://github.com/AugustNagro/magnum/issues/151) — MagUser test fixture overrides equals but not hashCode (only affects tests)
+
+### [wvlet/wvlet](https://github.com/wvlet/wvlet)
+
+- ![status](https://img.shields.io/github/issues/detail/state/wvlet/wvlet/1697) [#1697](https://github.com/wvlet/wvlet/issues/1697) — doubleQuoteIfNecessary doesn't escape internal double quotes, producing malformed SQL identifiers
+- ![status](https://img.shields.io/github/issues/detail/state/wvlet/wvlet/1698) [#1698](https://github.com/wvlet/wvlet/issues/1698) — TripleQuoteString.sqlExpr drops embedded newlines from triple-quoted string literals
+- ![status](https://img.shields.io/github/issues/detail/state/wvlet/wvlet/1699) [#1699](https://github.com/wvlet/wvlet/issues/1699) — DuckDBSchemaAnalyzer leaks JDBC Statement on every query
+
+### [softwaremill/sttp](https://github.com/softwaremill/sttp)
+
+- ![status](https://img.shields.io/github/issues/detail/state/softwaremill/sttp/2880) [#2880](https://github.com/softwaremill/sttp/issues/2880) — Several `ByteBuffer.array()` calls don't check `hasArray()` and ignore position/limit
+- ![status](https://img.shields.io/github/issues/detail/state/softwaremill/sttp/2881) [#2881](https://github.com/softwaremill/sttp/issues/2881) — toCurl drops multipart filename, content-type, and per-part headers
+- ![status](https://img.shields.io/github/issues/detail/state/softwaremill/sttp/2882) [#2882](https://github.com/softwaremill/sttp/issues/2882) — DigestAuthenticator silently falls through to qop-unaware mode when server sends `qop="auth,auth-int"
+
+### [softwaremill/tapir](https://github.com/softwaremill/tapir)
+
+- ![status](https://img.shields.io/github/issues/detail/state/softwaremill/tapir/5219) [#5219](https://github.com/softwaremill/tapir/issues/5219) — Validator.show for Enumeration is missing the closing parenthesis
+- ![status](https://img.shields.io/github/issues/detail/state/softwaremill/tapir/5220) [#5220](https://github.com/softwaremill/tapir/issues/5220) — SProductField overrides equals on (name, schema) without a matching hashCode
+- ![status](https://img.shields.io/github/issues/detail/state/softwaremill/tapir/5221) [#5221](https://github.com/softwaremill/tapir/issues/5221) — Default CORS config does not allow PATCH
+- ![status](https://img.shields.io/github/issues/detail/state/softwaremill/tapir/5222) [#5222](https://github.com/softwaremill/tapir/issues/5222) — [BUG] Multipart boundary uses scala.util.Random — predictable and not thread-safe
+
+### [zio/zio](https://github.com/zio/zio)
+
+- ![status](https://img.shields.io/github/issues/detail/state/zio/zio/10883) [#10883](https://github.com/zio/zio/issues/10883) — Schedule.dayOfMonth(30) crashes with DateTimeException in months that don't have day 30
+- ![status](https://img.shields.io/github/issues/detail/state/zio/zio/10884) [#10884](https://github.com/zio/zio/issues/10884) — Queue.offerAll silently drops items when paired takers are already interrupted
+- ![status](https://img.shields.io/github/issues/detail/state/zio/zio/10885) [#10885](https://github.com/zio/zio/issues/10885) — Queue.Sliding and Hub.Sliding can spin indefinitely when offer/publish keeps losing the race after slide
+- ![status](https://img.shields.io/github/issues/detail/state/zio/zio/10936) [#10936](https://github.com/zio/zio/issues/10936) — TMap.takeFirst silently drops remaining bucket elements after match (key-collision data loss)
+
+## Crashes / exceptions
+
+### [zio/zio-schema](https://github.com/zio/zio-schema)
+
+- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-schema/1096) [#1096](https://github.com/zio/zio-schema/issues/1096) — dynamic: DynamicValue round-trip fails for Schema.Fallback (Left/Right/Both)
+- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-schema/1097) [#1097](https://github.com/zio/zio-schema/issues/1097) — dynamic: DynamicValue round-trip fails for Schema.NonEmptySequence and Schema.NonEmptyMap
+- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-schema/1098) [#1098](https://github.com/zio/zio-schema/issues/1098) — Patch.Temporal for ZonedDateTimeType casts to LocalDate (ClassCastException)
+- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-schema/1099) [#1099](https://github.com/zio/zio-schema/issues/1099) — SchemaEquality compares rTuple.right with itself instead of lTuple.right
+- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-schema/1100) [#1100](https://github.com/zio/zio-schema/issues/1100) — MessagePack decoder: enum boundary check is off by one (ArrayIndexOutOfBoundsException for caseIndex == cases.length)
+- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-schema/1101) [#1101](https://github.com/zio/zio-schema/issues/1101) — MessagePack Fallback decoder uses path label "either" in error, and the size error says "1 or 2" instead of "2 or 3"
+- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-schema/1102) [#1102](https://github.com/zio/zio-schema/issues/1102) — Avro codec encodes ByteType as bare INT without a discriminator, so Schema[Byte] becomes Schema[Int] after roundtrip
+- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-schema/1108) [#1108](https://github.com/zio/zio-schema/issues/1108) — ThriftCodec streamEncoder shares mutable Encoder state across chunks (parallel streams interleave)
+- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-schema/1109) [#1109](https://github.com/zio/zio-schema/issues/1109) — ProtobufCodec Fallback decoder error references annotation companion object instead of field number
+
+### [circe/circe](https://github.com/circe/circe)
+
+- ![status](https://img.shields.io/github/issues/detail/state/circe/circe/2457) [#2457](https://github.com/circe/circe/issues/2457) — BiggerDecimal.integralIsValidLong returns true for "-", "+", "a" and crashes on ""
+- ![status](https://img.shields.io/github/issues/detail/state/circe/circe/2458) [#2458](https://github.com/circe/circe/issues/2458) — Printer with empty indent swaps rbraceLeft and rbraceRight (ConstantPieces path)
+- ![status](https://img.shields.io/github/issues/detail/state/circe/circe/2459) [#2459](https://github.com/circe/circe/issues/2459) — Printer indents content after `}` and `]` at child depth instead of parent depth
 
 ### [dotty-cps-async/dotty-cps-async](https://github.com/dotty-cps-async/dotty-cps-async)
 
@@ -99,89 +177,53 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 - ![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/267) [#267](https://github.com/FunktionalIO/pillars/issues/267) — db-doobie DatabaseConfig.toHikariConfig silently drops systemSchema, appSchema, and debug
 - ~~![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/268) [#268](https://github.com/FunktionalIO/pillars/issues/268) — db-skunk Typer.Strategy encoder emits MixedCase, decoder lowercases — round-trip OK but inconsistent with rest of codec~~ — **closed (FP, gate audit 2026-05-17):** round-trip works; sibling `RedactionStrategy` codec uses the same mixed-case-encode / lowercase-decode pattern
 
-### [getkyo/kyo](https://github.com/getkyo/kyo)
+### [strymonas/strymonas-scala](https://github.com/strymonas/strymonas-scala)
 
-- ![status](https://img.shields.io/github/issues/detail/state/getkyo/kyo/1621) [#1621](https://github.com/getkyo/kyo/issues/1621) — TMap.contains ignores the `key` parameter (collapses to `!_.isEmpty`)
-- ![status](https://img.shields.io/github/issues/detail/state/getkyo/kyo/1622) [#1622](https://github.com/getkyo/kyo/issues/1622) — TMap.initWith silently drops the function parameter and returns `TMap[K, V]` instead of `A`
-- ![status](https://img.shields.io/github/issues/detail/state/getkyo/kyo/1623) [#1623](https://github.com/getkyo/kyo/issues/1623) — Schedule.linear produces exponential (powers-of-two) delays instead of linear (1, 2, 4, 8, 16…)
+- ![status](https://img.shields.io/github/issues/detail/state/strymonas/strymonas-scala/10) [#10](https://github.com/strymonas/strymonas-scala/issues/10) — int_div / long_div crash at staging time when both operands are statically zero
+- ![status](https://img.shields.io/github/issues/detail/state/strymonas/strymonas-scala/11) [#11](https://github.com/strymonas/strymonas-scala/issues/11) — Cooked.collect returns elements in reverse stream order
+- ![status](https://img.shields.io/github/issues/detail/state/strymonas/strymonas-scala/12) [#12](https://github.com/strymonas/strymonas-scala/issues/12) — goon_conj / goon_disj reorder operands in the (GExp, GRef) case, breaking short-circuit semantics
 
-### [ghostdogpr/caliban](https://github.com/ghostdogpr/caliban)
+### [business4s/workflows4s](https://github.com/business4s/workflows4s)
 
-- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/caliban/2941) [#2941](https://github.com/ghostdogpr/caliban/issues/2941) — ResponseValue.ObjectValue.equals compares hashCode only — violates equals contract
-- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/caliban/2942) [#2942](https://github.com/ghostdogpr/caliban/issues/2942) — ResponseValue.deepMerge drops fields from the right-hand side that aren't in the left
-- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/caliban/2943) [#2943](https://github.com/ghostdogpr/caliban/issues/2943) — GraphQLResponse.withExtension creates duplicate keys instead of replacing
-- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/caliban/2944) [#2944](https://github.com/ghostdogpr/caliban/issues/2944) — StringValue.toString and EnumValue.toString skip backslash, backtick, tab, backspace and form-feed escapes
-- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/caliban/2945) [#2945](https://github.com/ghostdogpr/caliban/issues/2945) — Connection.fromList returns wrong hasPreviousPage / hasNextPage when paginating with cursor
-- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/caliban/2946) [#2946](https://github.com/ghostdogpr/caliban/issues/2946) — Field.resolveVariables silently drops arguments backed by nullable variables with no value
-- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/caliban/2947) [#2947](https://github.com/ghostdogpr/caliban/issues/2947) — validateSubscriptionOperation only checks the first subscription operation in the document
-- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/caliban/2948) [#2948](https://github.com/ghostdogpr/caliban/issues/2948) — FragmentValidator caches keyed only by hashCode — collisions can flip validation result
-- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/caliban/2949) [#2949](https://github.com/ghostdogpr/caliban/issues/2949) — SchemaComparison.compareDirectives flags unchanged arguments as changed when any sibling argument differs
-- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/caliban/2950) [#2950](https://github.com/ghostdogpr/caliban/issues/2950) — RemoteSchema.parseRemoteSchema always sets subscriptionType to None
-- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/caliban/2951) [#2951](https://github.com/ghostdogpr/caliban/issues/2951) — RemoteResolver.unwrap silently drops every field except the first from a multi-field ObjectValue
-- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/caliban/2952) [#2952](https://github.com/ghostdogpr/caliban/issues/2952) — SchemaTracer wrapper calls .head on potentially empty fields list
-- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/caliban/2953) [#2953](https://github.com/ghostdogpr/caliban/issues/2953) — ReportingDaemon halts the schema reporting loop on SchemaError, ignoring inSeconds retry hint
+- ![status](https://img.shields.io/github/issues/detail/state/business4s/workflows4s/257) [#257](https://github.com/business4s/workflows4s/issues/257) — ProceedingVisitor.onParallel calls .get on Option that can be None when one branch errored and another is still partial
+- ![status](https://img.shields.io/github/issues/detail/state/business4s/workflows4s/258) [#258](https://github.com/business4s/workflows4s/issues/258) — extractFirstInterruption drops the third step in 3-element interruption sequences (off-by-one threshold)
+- ![status](https://img.shields.io/github/issues/detail/state/business4s/workflows4s/259) [#259](https://github.com/business4s/workflows4s/issues/259) — RenderUtils.hasStarted returns true for a Loop that hasn't started any iteration
 
-### [ghostdogpr/purelogic](https://github.com/ghostdogpr/purelogic)
+### [business4s/decisions4s](https://github.com/business4s/decisions4s)
 
-- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/purelogic/26) [#26](https://github.com/ghostdogpr/purelogic/issues/26) — recoverSomeKeepLog rolls back state but keeps log when the partial function does not match, leaving inconsistent state
-
-### [hedgehogqa/scala-hedgehog](https://github.com/hedgehogqa/scala-hedgehog)
-
-- ![status](https://img.shields.io/github/issues/detail/state/hedgehogqa/scala-hedgehog/307) [#307](https://github.com/hedgehogqa/scala-hedgehog/issues/307) — Seed.chooseLong overflows max - min + 2 and computes x % range + min - 1, producing values below min
-- ![status](https://img.shields.io/github/issues/detail/state/hedgehogqa/scala-hedgehog/308) [#308](https://github.com/hedgehogqa/scala-hedgehog/issues/308) — MersenneTwister64.hashCode only uses mti, ignoring the 312-element mt array
-
-### [kubuszok/hearth](https://github.com/kubuszok/hearth)
-
-- ![status](https://img.shields.io/github/issues/detail/state/kubuszok/hearth/268) [#268](https://github.com/kubuszok/hearth/issues/268) — NonEmptyMap.map can produce duplicate keys, silently dropping entries on ListMap conversion
-
-### [http4s/http4s](https://github.com/http4s/http4s)
-
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7835) [#7835](https://github.com/http4s/http4s/issues/7835) — HttpDate.fromInstant truncates negative epochs toward zero, off by one second before 1970
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7836) [#7836](https://github.com/http4s/http4s/issues/7836) — Content-Range parser and constructor accept invalid ranges where first > last
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7837) [#7837](https://github.com/http4s/http4s/issues/7837) — Set-Cookie Max-Age parser rejects negative values that RFC 6265 specifies as valid
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7838) [#7838](https://github.com/http4s/http4s/issues/7838) — UriCoding.encode sign-extends bytes >= 0x80 when calling toSkip, breaking custom predicates for non-ASCII
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7839) [#7839](https://github.com/http4s/http4s/issues/7839) — HttpsRedirect middleware bakes the port into the hostname (or drops it entirely) in the redirect Location
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7840) [#7840](https://github.com/http4s/http4s/issues/7840) — CORS default policy allows PUT/PATCH/DELETE despite docstring saying GET, HEAD, POST only
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7841) [#7841](https://github.com/http4s/http4s/issues/7841) — RelaxedCookies parser accepts DEL (0x7F) and C1 control characters in cookie values
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7842) [#7842](https://github.com/http4s/http4s/issues/7842) — Keep-Alive reservedTokens has typo "token" instead of "timeout"
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7843) [#7843](https://github.com/http4s/http4s/issues/7843) — Retry-After delay-seconds parser throws NumberFormatException on overflow instead of returning ParseFailure
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7844) [#7844](https://github.com/http4s/http4s/issues/7844) — Host header constructor and parser accept invalid port numbers (negative, > 65535)
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7845) [#7845](https://github.com/http4s/http4s/issues/7845) — VirtualHost.wildcard allows regex injection through unescaped metacharacters
-- ~~![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7846) [#7846](https://github.com/http4s/http4s/issues/7846) — Caching middleware Expires arithmetic can overflow Long for large but finite lifetimes~~ — **closed (FP, runtime audit 2026-05-18):** `scala.concurrent.duration.Duration` caps at ~292 years; the overflow scenario described isn't reachable from user code
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7847) [#7847](https://github.com/http4s/http4s/issues/7847) — Throttle.defaultResponse silently drops the retryAfter parameter — no Retry-After header on 429
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7848) [#7848](https://github.com/http4s/http4s/issues/7848) — VirtualHost.regex uses partial match instead of full match — host header spoofing
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7849) [#7849](https://github.com/http4s/http4s/issues/7849) — Access-Control-Max-Age.Cache.apply bypasses the validation in fromLong
-
-### [Iltotore/iron](https://github.com/Iltotore/iron)
-
-- ![status](https://img.shields.io/github/issues/detail/state/Iltotore/iron/369) [#369](https://github.com/Iltotore/iron/issues/369) — Not implication is the inverse, not the contrapositive (unsoundness)
-- ![status](https://img.shields.io/github/issues/detail/state/Iltotore/iron/370) [#370](https://github.com/Iltotore/iron/issues/370) — ForAll ==> Exists (and friends) are unsound on empty/short collections
-- ![status](https://img.shields.io/github/issues/detail/state/Iltotore/iron/371) [#371](https://github.com/Iltotore/iron/issues/371) — Numeric Greater/Less/Multiple for Int/Long compare via Double, losing precision above 2^53
-
-### [kitlangton/neotype](https://github.com/kitlangton/neotype)
-
-- ~~![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/465) [#465](https://github.com/kitlangton/neotype/issues/465) — CaseClassBuilder.newInstance silently swallows constructor exceptions and returns a fake value~~ — **closed (FP, gate audit 2026-05-17):** three fallback arms read as deliberate partial-evaluation; no runtime reproducer
-- ![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/466) [#466](https://github.com/kitlangton/neotype/issues/466) — LambdaCompiler.isDefinedAt silently turns Left(error) into false — collect/filter/exists drop elements without surfacing comptime errors
-- ~~![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/467) [#467](https://github.com/kitlangton/neotype/issues/467) — TermCompiler — TermIR.Throw uses raw throw inside flatMap, bypassing the Either error pipeline~~ — **closed (FP, gate audit 2026-05-17):** file's own author comments mark these compile-time throws as intentional
-- ![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/468) [#468](https://github.com/kitlangton/neotype/issues/468) — comptime LambdaCompiler discards match scrutinee — `(x => f(x) match ...)` matches against `x`, not `f(x)
-- ![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/473) [#473](https://github.com/kitlangton/neotype/issues/473) — MatchCompiler eagerly evaluates scrutinee, ignoring intervening MutableRef writes
+- ![status](https://img.shields.io/github/issues/detail/state/business4s/decisions4s/101) [#101](https://github.com/business4s/decisions4s/issues/101) — MarkdownRenderer emits rows with inconsistent column counts when annotations are mixed
+- ![status](https://img.shields.io/github/issues/detail/state/business4s/decisions4s/102) [#102](https://github.com/business4s/decisions4s/issues/102) — Distinct hit policy uses Set deduplication, can silently accept +0.0 vs -0.0 as identical
+- ![status](https://img.shields.io/github/issues/detail/state/business4s/decisions4s/103) [#103](https://github.com/business4s/decisions4s/issues/103) — DiagnosticsPrinter throws empty.max when constructed for a decision table with zero input fields
+- ~~![status](https://img.shields.io/github/issues/detail/state/business4s/decisions4s/104) [#104](https://github.com/business4s/decisions4s/issues/104) — FromFeel numeric readers throw bare MatchError on non-numeric inputs, no field/expression context~~ — **closed (FP, runtime audit 2026-05-18):** upstream now raises IllegalArgumentException with full context, not the bare MatchError I claimed
 
 ### [lampepfl/gears](https://github.com/lampepfl/gears)
 
 - ![status](https://img.shields.io/github/issues/detail/state/lampepfl/gears/179) [#179](https://github.com/lampepfl/gears/issues/179) — TaskSchedule.RepeatUntilFailure/Success increments by 2, causing infinite loop on even maxRepetitions
 
-### [lloydmeta/enumeratum](https://github.com/lloydmeta/enumeratum)
+### [xebia-functional/Unwrapped](https://github.com/xebia-functional/Unwrapped)
 
-- ~~![status](https://img.shields.io/github/issues/detail/state/lloydmeta/enumeratum/469) [#469](https://github.com/lloydmeta/enumeratum/issues/469) — Slick CharEnum codec calls .head on the DB string and crashes on empty values~~ — **closed (FP, gate audit 2026-05-17):** sibling decoders share the same unchecked-read-then-map-lookup convention; maintainer already leaned non-issue
+- ![status](https://img.shields.io/github/issues/detail/state/xebia-functional/Unwrapped/136) [#136](https://github.com/xebia-functional/Unwrapped/issues/136) — zipWithIndex shares its counter across stream consumptions
+- ![status](https://img.shields.io/github/issues/detail/state/xebia-functional/Unwrapped/137) [#137](https://github.com/xebia-functional/Unwrapped/issues/137) — PutPartiallyApplied.equals throws ClassCastException for non-matching types (forgot the canEqual check)
 
-### [mattlianje/etl4s](https://github.com/mattlianje/etl4s)
+### [softwaremill/quicklens](https://github.com/softwaremill/quicklens)
 
-- ![status](https://img.shields.io/github/issues/detail/state/mattlianje/etl4s/20) [#20](https://github.com/mattlianje/etl4s/issues/20) — Lineage JSON output produces invalid JSON when names/descriptions contain quotes, backslashes or newlines
-- ![status](https://img.shields.io/github/issues/detail/state/mattlianje/etl4s/21) [#21](https://github.com/mattlianje/etl4s/issues/21) — Lineage.chain and Lineage.combine have identical implementations
+- ![status](https://img.shields.io/github/issues/detail/state/softwaremill/quicklens/301) [#301](https://github.com/softwaremill/quicklens/issues/301) — Seq/Array atOrElse throws IndexOutOfBoundsException for missing indices instead of using default
 
-### [optics-dev/Monocle](https://github.com/optics-dev/Monocle)
+### [softwaremill/sttp-ai](https://github.com/softwaremill/sttp-ai)
 
-- ![status](https://img.shields.io/github/issues/detail/state/optics-dev/Monocle/1582) [#1582](https://github.com/optics-dev/Monocle/issues/1582) — monocle.std.string.stringToLong accepts "-0" and other negative-zero forms, breaks Prism law
+- ![status](https://img.shields.io/github/issues/detail/state/softwaremill/sttp-ai/470) [#470](https://github.com/softwaremill/sttp-ai/issues/470) — SnakePickle.snakeToCamel crashes on keys with leading, trailing, or consecutive underscores
+
+### [scalameta/munit](https://github.com/scalameta/munit)
+
+- ![status](https://img.shields.io/github/issues/detail/state/scalameta/munit/1090) [#1090](https://github.com/scalameta/munit/issues/1090) — munitAppendToFailureMessage NPEs when the test exception has a null message
+
+### [siriusxm/snapshot4s](https://github.com/siriusxm/snapshot4s)
+
+- ![status](https://img.shields.io/github/issues/detail/state/siriusxm/snapshot4s/203) [#203](https://github.com/siriusxm/snapshot4s/issues/203) — Hashing.calculateHash uses String.hashCode for patch integrity, which collides easily on a 32-bit hash
+- ![status](https://img.shields.io/github/issues/detail/state/siriusxm/snapshot4s/204) [#204](https://github.com/siriusxm/snapshot4s/issues/204) — InlineRepr.printChar maps ESC (0x1B) to an empty string, silently dropping ANSI escapes from snapshot reprs
+- ![status](https://img.shields.io/github/issues/detail/state/siriusxm/snapshot4s/205) [#205](https://github.com/siriusxm/snapshot4s/issues/205) — sourceBaseDirectory crashes with empty.reduce when sourceDirectories is empty, and sharedParent can NPE on disjoint paths
+
+## Logic / correctness
 
 ### [propensive/soundness](https://github.com/propensive/soundness)
 
@@ -207,49 +249,76 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 - ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1060) [#1060](https://github.com/propensive/soundness/issues/1060) — acyclicity Dag.sort uses unsafe .get and crashes with NoSuchElementException on cyclic graphs
 - ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1061) [#1061](https://github.com/propensive/soundness/issues/1061) — revolution Semver ordering is wrong for equal versions and for release-vs-prerelease
 
-### [raquo/Laminar](https://github.com/raquo/Laminar)
+### [ghostdogpr/caliban](https://github.com/ghostdogpr/caliban)
 
-- ![status](https://img.shields.io/github/issues/detail/state/raquo/Laminar/195) [#195](https://github.com/raquo/Laminar/issues/195) — ChildrenCommandInserter.Append unconditionally sets nodeCountDiff = 1, drifting on failed inserts
-- ![status](https://img.shields.io/github/issues/detail/state/raquo/Laminar/196) [#196](https://github.com/raquo/Laminar/issues/196) — insertChildBefore/After call setParent unconditionally on failed DOM insert
+- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/caliban/2941) [#2941](https://github.com/ghostdogpr/caliban/issues/2941) — ResponseValue.ObjectValue.equals compares hashCode only — violates equals contract
+- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/caliban/2942) [#2942](https://github.com/ghostdogpr/caliban/issues/2942) — ResponseValue.deepMerge drops fields from the right-hand side that aren't in the left
+- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/caliban/2943) [#2943](https://github.com/ghostdogpr/caliban/issues/2943) — GraphQLResponse.withExtension creates duplicate keys instead of replacing
+- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/caliban/2944) [#2944](https://github.com/ghostdogpr/caliban/issues/2944) — StringValue.toString and EnumValue.toString skip backslash, backtick, tab, backspace and form-feed escapes
+- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/caliban/2945) [#2945](https://github.com/ghostdogpr/caliban/issues/2945) — Connection.fromList returns wrong hasPreviousPage / hasNextPage when paginating with cursor
+- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/caliban/2946) [#2946](https://github.com/ghostdogpr/caliban/issues/2946) — Field.resolveVariables silently drops arguments backed by nullable variables with no value
+- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/caliban/2947) [#2947](https://github.com/ghostdogpr/caliban/issues/2947) — validateSubscriptionOperation only checks the first subscription operation in the document
+- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/caliban/2948) [#2948](https://github.com/ghostdogpr/caliban/issues/2948) — FragmentValidator caches keyed only by hashCode — collisions can flip validation result
+- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/caliban/2949) [#2949](https://github.com/ghostdogpr/caliban/issues/2949) — SchemaComparison.compareDirectives flags unchanged arguments as changed when any sibling argument differs
+- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/caliban/2950) [#2950](https://github.com/ghostdogpr/caliban/issues/2950) — RemoteSchema.parseRemoteSchema always sets subscriptionType to None
+- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/caliban/2951) [#2951](https://github.com/ghostdogpr/caliban/issues/2951) — RemoteResolver.unwrap silently drops every field except the first from a multi-field ObjectValue
+- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/caliban/2952) [#2952](https://github.com/ghostdogpr/caliban/issues/2952) — SchemaTracer wrapper calls .head on potentially empty fields list
+- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/caliban/2953) [#2953](https://github.com/ghostdogpr/caliban/issues/2953) — ReportingDaemon halts the schema reporting loop on SchemaError, ignoring inSeconds retry hint
 
-### [rcardin/raise4s](https://github.com/rcardin/raise4s)
+### [getkyo/kyo](https://github.com/getkyo/kyo)
 
-- ~~![status](https://img.shields.io/github/issues/detail/state/rcardin/raise4s/134) [#134](https://github.com/rcardin/raise4s/issues/134) — accumulate silently drops accumulated errors when no Value.value is read~~ — **closed (FP, runtime audit 2026-05-18):** `accumulate`'s ScalaDoc explicitly documents that errors are raised only on access — silent drop on unused values is by-design lazy semantics
+- ![status](https://img.shields.io/github/issues/detail/state/getkyo/kyo/1621) [#1621](https://github.com/getkyo/kyo/issues/1621) — TMap.contains ignores the `key` parameter (collapses to `!_.isEmpty`)
+- ![status](https://img.shields.io/github/issues/detail/state/getkyo/kyo/1622) [#1622](https://github.com/getkyo/kyo/issues/1622) — TMap.initWith silently drops the function parameter and returns `TMap[K, V]` instead of `A`
+- ![status](https://img.shields.io/github/issues/detail/state/getkyo/kyo/1623) [#1623](https://github.com/getkyo/kyo/issues/1623) — Schedule.linear produces exponential (powers-of-two) delays instead of linear (1, 2, 4, 8, 16…)
 
-### [rcardin/yaes](https://github.com/rcardin/yaes)
+### [Iltotore/iron](https://github.com/Iltotore/iron)
 
-- ![status](https://img.shields.io/github/issues/detail/state/rcardin/yaes/253) [#253](https://github.com/rcardin/yaes/issues/253) — yaes-core: `Raise.catching[E]` misses subclasses of `E` (uses `==` instead of `isInstance`)
-- ~~![status](https://img.shields.io/github/issues/detail/state/rcardin/yaes/254) [#254](https://github.com/rcardin/yaes/issues/254) — yaes-core: `JvmStructuredScope.scopes` uses `mutable.Map` from concurrent virtual threads~~ — **closed (FP):** agent looked at a local fork branch; `JvmStructuredScope` does not exist in upstream
-- ~~![status](https://img.shields.io/github/issues/detail/state/rcardin/yaes/255) [#255](https://github.com/rcardin/yaes/issues/255) — yaes-core: `Var` CAS loop uses Scala `==` (structural) instead of `eq` (reference) — ABA-prone~~ — **closed (FP):** agent looked at a local fork branch; `Var` does not exist in upstream
+- ![status](https://img.shields.io/github/issues/detail/state/Iltotore/iron/369) [#369](https://github.com/Iltotore/iron/issues/369) — Not implication is the inverse, not the contrapositive (unsoundness)
+- ![status](https://img.shields.io/github/issues/detail/state/Iltotore/iron/370) [#370](https://github.com/Iltotore/iron/issues/370) — ForAll ==> Exists (and friends) are unsound on empty/short collections
+- ![status](https://img.shields.io/github/issues/detail/state/Iltotore/iron/371) [#371](https://github.com/Iltotore/iron/issues/371) — Numeric Greater/Less/Multiple for Int/Long compare via Double, losing precision above 2^53
 
-### [scala/scala3](https://github.com/scala/scala3)
+### [zio/zio-json](https://github.com/zio/zio-json)
 
-> **Compiler crashes — the highest-value class of finding here (reference Scala 3 compiler, not library logic).** 9 issues: **4 already closed as fixed upstream with merged PRs**, 0 false positives (**0% AI-slop**). Sorted by priority (impact × fix-cost): invalid-bytecode and crashes-on-valid-code first; fixed and narrow edge cases last.
+- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-json/1600) [#1600](https://github.com/zio/zio-json/issues/1600) — Json.Obj.equals returns true for distinct objects with duplicate keys
 
-- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/25725) [#25725](https://github.com/scala/scala3/issues/25725) — VerifyError: erased context-function parameter before non-erased produces invalid bytecode — **fixed (PR #25751)**
-- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/25727) [#25727](https://github.com/scala/scala3/issues/25727) — Nested `boundary`: inner block silently catches `break` meant for outer boundary via type inference — *open, disputed (maintainers lean by-design; `-Wnonunit-statement` lint suggested)*
-- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/25724) [#25724](https://github.com/scala/scala3/issues/25724) — Recursive macro splice causes StackOverflowError during inlining phase — **accepted, fix in #25937**
-- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/25246) [#25246](https://github.com/scala/scala3/issues/25246) — Crash: AssertionError in `TypeOps.dominators` with complex context bounds and quoted expression — *open, awaiting maintainer*
-- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/26037) [#26037](https://github.com/scala/scala3/issues/26037) — Crash: AssertionError "asTerm called on not-a-Term type T" when exporting members of a cyclic opaque type companion — *open, retest-on-nightly requested*
-- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/25244) [#25244](https://github.com/scala/scala3/issues/25244) — Crash in `tpd.singleton` on `PreviousErrorType` during error recovery (inline match + quoted pattern with unresolved import) — **accepted, maintainer-reproduced, fix WIP**
-- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/25726) [#25726](https://github.com/scala/scala3/issues/25726) — AssertionError in erasure when overriding generic trait method with erased using clause before type-param argument — **fixed (PRs #25923, #26047)**
-- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/25723) [#25723](https://github.com/scala/scala3/issues/25723) — Duplicate enum name (simple + parametric) causes assertion failure — **fixed (PR #26205)**
-- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/25248) [#25248](https://github.com/scala/scala3/issues/25248) — Parser crash (AssertionError) when line comment hides `then` in for-generator inside new argument — **fixed (PR #25253)**
+### [zio/zio-http](https://github.com/zio/zio-http)
 
-### [scalameta/munit](https://github.com/scalameta/munit)
+- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-http/4130) [#4130](https://github.com/zio/zio-http/issues/4130) — CORS middleware rejects actual cross-origin requests when method is not in allowedMethods
+- ~~![status](https://img.shields.io/github/issues/detail/state/zio/zio-http/4131) [#4131](https://github.com/zio/zio-http/issues/4131) — ServerSentEvent.encoded silently turns newlines in eventType / id into spaces~~ — **closed (FP, runtime audit 2026-05-18):** upstream tests assert the current space-joining behavior; newline-containing eventType/id is treated as out-of-contract and silently normalized by design
+- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-http/4132) [#4132](https://github.com/zio/zio-http/issues/4132) — PathCodec.Annotated.equals is asymmetric and case class is missing a matching hashCode
 
-- ![status](https://img.shields.io/github/issues/detail/state/scalameta/munit/1090) [#1090](https://github.com/scalameta/munit/issues/1090) — munitAppendToFailureMessage NPEs when the test exception has a null message
+### [kitlangton/neotype](https://github.com/kitlangton/neotype)
+
+- ~~![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/465) [#465](https://github.com/kitlangton/neotype/issues/465) — CaseClassBuilder.newInstance silently swallows constructor exceptions and returns a fake value~~ — **closed (FP, gate audit 2026-05-17):** three fallback arms read as deliberate partial-evaluation; no runtime reproducer
+- ![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/466) [#466](https://github.com/kitlangton/neotype/issues/466) — LambdaCompiler.isDefinedAt silently turns Left(error) into false — collect/filter/exists drop elements without surfacing comptime errors
+- ~~![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/467) [#467](https://github.com/kitlangton/neotype/issues/467) — TermCompiler — TermIR.Throw uses raw throw inside flatMap, bypassing the Either error pipeline~~ — **closed (FP, gate audit 2026-05-17):** file's own author comments mark these compile-time throws as intentional
+- ![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/468) [#468](https://github.com/kitlangton/neotype/issues/468) — comptime LambdaCompiler discards match scrutinee — `(x => f(x) match ...)` matches against `x`, not `f(x)
+- ![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/473) [#473](https://github.com/kitlangton/neotype/issues/473) — MatchCompiler eagerly evaluates scrutinee, ignoring intervening MutableRef writes
+
+### [com-lihaoyi/upickle](https://github.com/com-lihaoyi/upickle)
+
+- ![status](https://img.shields.io/github/issues/detail/state/com-lihaoyi/upickle/702) [#702](https://github.com/com-lihaoyi/upickle/issues/702) — MsgPackReader silently returns empty Array/Map for Array32/Map32 with length >= 2^31
+- ![status](https://img.shields.io/github/issues/detail/state/com-lihaoyi/upickle/703) [#703](https://github.com/com-lihaoyi/upickle/issues/703) — ujson silently accepts invalid hex digits in \uXXXX escapes (g, X, Z map to 0)
+
+### [com-lihaoyi/geny](https://github.com/com-lihaoyi/geny)
+
+- ![status](https://img.shields.io/github/issues/detail/state/com-lihaoyi/geny/104) [#104](https://github.com/com-lihaoyi/geny/issues/104) — Bytes overrides equals but not hashCode, breaking HashMap/HashSet
+- ![status](https://img.shields.io/github/issues/detail/state/com-lihaoyi/geny/105) [#105](https://github.com/com-lihaoyi/geny/issues/105) — Generator.maxBy / minBy silently return null on empty generators
+
+### [com-lihaoyi/fansi](https://github.com/com-lihaoyi/fansi)
+
+- ![status](https://img.shields.io/github/issues/detail/state/com-lihaoyi/fansi/139) [#139](https://github.com/com-lihaoyi/fansi/issues/139) — Str.overlayAll error message prints end where start should appear
+- ![status](https://img.shields.io/github/issues/detail/state/com-lihaoyi/fansi/140) [#140](https://github.com/com-lihaoyi/fansi/issues/140) — Attrs.Multiple.equals uses reference equality on attrs while hashCode is structural
+
+### [hedgehogqa/scala-hedgehog](https://github.com/hedgehogqa/scala-hedgehog)
+
+- ![status](https://img.shields.io/github/issues/detail/state/hedgehogqa/scala-hedgehog/307) [#307](https://github.com/hedgehogqa/scala-hedgehog/issues/307) — Seed.chooseLong overflows max - min + 2 and computes x % range + min - 1, producing values below min
+- ![status](https://img.shields.io/github/issues/detail/state/hedgehogqa/scala-hedgehog/308) [#308](https://github.com/hedgehogqa/scala-hedgehog/issues/308) — MersenneTwister64.hashCode only uses mti, ignoring the 312-element mt array
 
 ### [scalus3/scalus](https://github.com/scalus3/scalus)
 
 - ![status](https://img.shields.io/github/issues/detail/state/scalus3/scalus/272) [#272](https://github.com/scalus3/scalus/issues/272) — NonNegativeInterval overrides equals (compares reduced fractions) but not hashCode
 - ![status](https://img.shields.io/github/issues/detail/state/scalus3/scalus/273) [#273](https://github.com/scalus3/scalus/issues/273) — BLS12-381 G1Element / G2Element / MLResult override equals without hashCode
-
-### [siriusxm/snapshot4s](https://github.com/siriusxm/snapshot4s)
-
-- ![status](https://img.shields.io/github/issues/detail/state/siriusxm/snapshot4s/203) [#203](https://github.com/siriusxm/snapshot4s/issues/203) — Hashing.calculateHash uses String.hashCode for patch integrity, which collides easily on a 32-bit hash
-- ![status](https://img.shields.io/github/issues/detail/state/siriusxm/snapshot4s/204) [#204](https://github.com/siriusxm/snapshot4s/issues/204) — InlineRepr.printChar maps ESC (0x1B) to an empty string, silently dropping ANSI escapes from snapshot reprs
-- ![status](https://img.shields.io/github/issues/detail/state/siriusxm/snapshot4s/205) [#205](https://github.com/siriusxm/snapshot4s/issues/205) — sourceBaseDirectory crashes with empty.reduce when sourceDirectories is empty, and sharedParent can NPE on disjoint paths
 
 ### [sirthias/borer](https://github.com/sirthias/borer)
 
@@ -265,49 +334,10 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 - ![status](https://img.shields.io/github/issues/detail/state/softwaremill/ox/439) [#439](https://github.com/softwaremill/ox/issues/439) — Flow.range with a negative step emits only the first element
 - ![status](https://img.shields.io/github/issues/detail/state/softwaremill/ox/442) [#442](https://github.com/softwaremill/ox/issues/442) — AdaptiveRetry stops retrying on `Left` when `shouldPayFailureCost` is false (free retry intended)
 
-### [softwaremill/quicklens](https://github.com/softwaremill/quicklens)
+### [raquo/Laminar](https://github.com/raquo/Laminar)
 
-- ![status](https://img.shields.io/github/issues/detail/state/softwaremill/quicklens/301) [#301](https://github.com/softwaremill/quicklens/issues/301) — Seq/Array atOrElse throws IndexOutOfBoundsException for missing indices instead of using default
-
-### [softwaremill/sttp](https://github.com/softwaremill/sttp)
-
-- ![status](https://img.shields.io/github/issues/detail/state/softwaremill/sttp/2880) [#2880](https://github.com/softwaremill/sttp/issues/2880) — Several `ByteBuffer.array()` calls don't check `hasArray()` and ignore position/limit
-- ![status](https://img.shields.io/github/issues/detail/state/softwaremill/sttp/2881) [#2881](https://github.com/softwaremill/sttp/issues/2881) — toCurl drops multipart filename, content-type, and per-part headers
-- ![status](https://img.shields.io/github/issues/detail/state/softwaremill/sttp/2882) [#2882](https://github.com/softwaremill/sttp/issues/2882) — DigestAuthenticator silently falls through to qop-unaware mode when server sends `qop="auth,auth-int"
-
-### [softwaremill/sttp-ai](https://github.com/softwaremill/sttp-ai)
-
-- ![status](https://img.shields.io/github/issues/detail/state/softwaremill/sttp-ai/470) [#470](https://github.com/softwaremill/sttp-ai/issues/470) — SnakePickle.snakeToCamel crashes on keys with leading, trailing, or consecutive underscores
-
-### [softwaremill/tapir](https://github.com/softwaremill/tapir)
-
-- ![status](https://img.shields.io/github/issues/detail/state/softwaremill/tapir/5219) [#5219](https://github.com/softwaremill/tapir/issues/5219) — Validator.show for Enumeration is missing the closing parenthesis
-- ![status](https://img.shields.io/github/issues/detail/state/softwaremill/tapir/5220) [#5220](https://github.com/softwaremill/tapir/issues/5220) — SProductField overrides equals on (name, schema) without a matching hashCode
-- ![status](https://img.shields.io/github/issues/detail/state/softwaremill/tapir/5221) [#5221](https://github.com/softwaremill/tapir/issues/5221) — Default CORS config does not allow PATCH
-- ![status](https://img.shields.io/github/issues/detail/state/softwaremill/tapir/5222) [#5222](https://github.com/softwaremill/tapir/issues/5222) — [BUG] Multipart boundary uses scala.util.Random — predictable and not thread-safe
-
-### [strymonas/strymonas-scala](https://github.com/strymonas/strymonas-scala)
-
-- ![status](https://img.shields.io/github/issues/detail/state/strymonas/strymonas-scala/10) [#10](https://github.com/strymonas/strymonas-scala/issues/10) — int_div / long_div crash at staging time when both operands are statically zero
-- ![status](https://img.shields.io/github/issues/detail/state/strymonas/strymonas-scala/11) [#11](https://github.com/strymonas/strymonas-scala/issues/11) — Cooked.collect returns elements in reverse stream order
-- ![status](https://img.shields.io/github/issues/detail/state/strymonas/strymonas-scala/12) [#12](https://github.com/strymonas/strymonas-scala/issues/12) — goon_conj / goon_disj reorder operands in the (GExp, GRef) case, breaking short-circuit semantics
-
-### [takapi327/ldbc](https://github.com/takapi327/ldbc)
-
-- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/710) [#710](https://github.com/takapi327/ldbc/issues/710) — [Bug]: PooledDataSource.validateConnection uses handleError, dropping debug log effect
-- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/711) [#711](https://github.com/takapi327/ldbc/issues/711) — [Bug]: buildBatchQuery splits on case-sensitive "VALUES", breaks for lowercase "values"
-- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/712) [#712](https://github.com/takapi327/ldbc/issues/712) — [Bug]: Statement.execute throws MatchError for SHOW/DESCRIBE/EXPLAIN and other result-set queries
-- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/713) [#713](https://github.com/takapi327/ldbc/issues/713) — [Bug]: DataTypeParser.mediumblobType produces DataType.TINYBLOB() instead of MEDIUMBLOB()
-- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/714) [#714](https://github.com/takapi327/ldbc/issues/714) — [Bug]: ComStmtExecutePacket encoder uses uint24L for parameter types instead of uint16L (MySQL binary protocol violation)
-- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/715) [#715](https://github.com/takapi327/ldbc/issues/715) — [Bug]: SharedResultSet.isFirst returns true for any row past the first, not just row 1
-- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/716) [#716](https://github.com/takapi327/ldbc/issues/716) — [Bug]: Parameter.string SQL escaping is incomplete (missing NUL/CR/LF/Ctrl-Z/backspace) and orders quote-escape before backslash-escape
-- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/717) [#717](https://github.com/takapi327/ldbc/issues/717) — [Bug]: DataTypeParser.doubleType produces DataType.FLOAT (and DataType.DOUBLE doesn't exist in the model)
-- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/718) [#718](https://github.com/takapi327/ldbc/issues/718) — [Bug]: SSL.withTLSParameters drops fallbackOk, withFallback drops tlsParameters when chained
-- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/719) [#719](https://github.com/takapi327/ldbc/issues/719) — [Bug]: MysqlCharset.isOkayForVersion comparison is inverted (gb18030 rejected on MySQL 8.0)
-- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/720) [#720](https://github.com/takapi327/ldbc/issues/720) — [Bug]: VARCHAR rejects lengths > 255 at compile time (should allow up to 65535)
-- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/731) [#731](https://github.com/takapi327/ldbc/issues/731) — CircuitBreaker HalfOpen admits multiple concurrent test requests (non-atomic state transition)
-- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/732) [#732](https://github.com/takapi327/ldbc/issues/732) — Pool `resetConnection` commits pending transactions instead of rolling back (autoCommit set before rollback)
-- ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/733) [#733](https://github.com/takapi327/ldbc/issues/733) — CharsetMapping cp850 has mblen=2 instead of mblen=1 (single-byte charset misclassified)
+- ![status](https://img.shields.io/github/issues/detail/state/raquo/Laminar/195) [#195](https://github.com/raquo/Laminar/issues/195) — ChildrenCommandInserter.Append unconditionally sets nodeCountDiff = 1, drifting on failed inserts
+- ![status](https://img.shields.io/github/issues/detail/state/raquo/Laminar/196) [#196](https://github.com/raquo/Laminar/issues/196) — insertChildBefore/After call setParent unconditionally on failed DOM insert
 
 ### [tarao/record4s](https://github.com/tarao/record4s)
 
@@ -318,61 +348,50 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 
 - ![status](https://img.shields.io/github/issues/detail/state/typelevel/fs2/3725) [#3725](https://github.com/typelevel/fs2/issues/3725) — text.linesLimited lets through arbitrarily long lines when the line and its terminator land in the same chunk
 
-### [typelevel/skunk](https://github.com/typelevel/skunk)
-
-- ![status](https://img.shields.io/github/issues/detail/state/typelevel/skunk/1295) [#1295](https://github.com/typelevel/skunk/issues/1295) — timestamptz precision error message has typo "timestampz" (missing "t")
-
 ### [wvlet/airframe](https://github.com/wvlet/airframe)
 
 - ![status](https://img.shields.io/github/issues/detail/state/wvlet/airframe/4181) [#4181](https://github.com/wvlet/airframe/issues/4181) — BigIntCodec / BigIntegerCodec silently truncates large negative BigInts to their low 64 bits
 
-### [wvlet/wvlet](https://github.com/wvlet/wvlet)
+### [kubuszok/hearth](https://github.com/kubuszok/hearth)
 
-- ![status](https://img.shields.io/github/issues/detail/state/wvlet/wvlet/1697) [#1697](https://github.com/wvlet/wvlet/issues/1697) — doubleQuoteIfNecessary doesn't escape internal double quotes, producing malformed SQL identifiers
-- ![status](https://img.shields.io/github/issues/detail/state/wvlet/wvlet/1698) [#1698](https://github.com/wvlet/wvlet/issues/1698) — TripleQuoteString.sqlExpr drops embedded newlines from triple-quoted string literals
-- ![status](https://img.shields.io/github/issues/detail/state/wvlet/wvlet/1699) [#1699](https://github.com/wvlet/wvlet/issues/1699) — DuckDBSchemaAnalyzer leaks JDBC Statement on every query
+- ![status](https://img.shields.io/github/issues/detail/state/kubuszok/hearth/268) [#268](https://github.com/kubuszok/hearth/issues/268) — NonEmptyMap.map can produce duplicate keys, silently dropping entries on ListMap conversion
 
-### [xebia-functional/Unwrapped](https://github.com/xebia-functional/Unwrapped)
+### [mattlianje/etl4s](https://github.com/mattlianje/etl4s)
 
-- ![status](https://img.shields.io/github/issues/detail/state/xebia-functional/Unwrapped/136) [#136](https://github.com/xebia-functional/Unwrapped/issues/136) — zipWithIndex shares its counter across stream consumptions
-- ![status](https://img.shields.io/github/issues/detail/state/xebia-functional/Unwrapped/137) [#137](https://github.com/xebia-functional/Unwrapped/issues/137) — PutPartiallyApplied.equals throws ClassCastException for non-matching types (forgot the canEqual check)
+- ![status](https://img.shields.io/github/issues/detail/state/mattlianje/etl4s/20) [#20](https://github.com/mattlianje/etl4s/issues/20) — Lineage JSON output produces invalid JSON when names/descriptions contain quotes, backslashes or newlines
+- ![status](https://img.shields.io/github/issues/detail/state/mattlianje/etl4s/21) [#21](https://github.com/mattlianje/etl4s/issues/21) — Lineage.chain and Lineage.combine have identical implementations
 
-### [zio/zio](https://github.com/zio/zio)
+### [optics-dev/Monocle](https://github.com/optics-dev/Monocle)
 
-- ![status](https://img.shields.io/github/issues/detail/state/zio/zio/10883) [#10883](https://github.com/zio/zio/issues/10883) — Schedule.dayOfMonth(30) crashes with DateTimeException in months that don't have day 30
-- ![status](https://img.shields.io/github/issues/detail/state/zio/zio/10884) [#10884](https://github.com/zio/zio/issues/10884) — Queue.offerAll silently drops items when paired takers are already interrupted
-- ![status](https://img.shields.io/github/issues/detail/state/zio/zio/10885) [#10885](https://github.com/zio/zio/issues/10885) — Queue.Sliding and Hub.Sliding can spin indefinitely when offer/publish keeps losing the race after slide
-- ![status](https://img.shields.io/github/issues/detail/state/zio/zio/10936) [#10936](https://github.com/zio/zio/issues/10936) — TMap.takeFirst silently drops remaining bucket elements after match (key-collision data loss)
+- ![status](https://img.shields.io/github/issues/detail/state/optics-dev/Monocle/1582) [#1582](https://github.com/optics-dev/Monocle/issues/1582) — monocle.std.string.stringToLong accepts "-0" and other negative-zero forms, breaks Prism law
 
-### [zio/zio-http](https://github.com/zio/zio-http)
+### [ghostdogpr/purelogic](https://github.com/ghostdogpr/purelogic)
 
-- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-http/4130) [#4130](https://github.com/zio/zio-http/issues/4130) — CORS middleware rejects actual cross-origin requests when method is not in allowedMethods
-- ~~![status](https://img.shields.io/github/issues/detail/state/zio/zio-http/4131) [#4131](https://github.com/zio/zio-http/issues/4131) — ServerSentEvent.encoded silently turns newlines in eventType / id into spaces~~ — **closed (FP, runtime audit 2026-05-18):** upstream tests assert the current space-joining behavior; newline-containing eventType/id is treated as out-of-contract and silently normalized by design
-- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-http/4132) [#4132](https://github.com/zio/zio-http/issues/4132) — PathCodec.Annotated.equals is asymmetric and case class is missing a matching hashCode
+- ![status](https://img.shields.io/github/issues/detail/state/ghostdogpr/purelogic/26) [#26](https://github.com/ghostdogpr/purelogic/issues/26) — recoverSomeKeepLog rolls back state but keeps log when the partial function does not match, leaving inconsistent state
 
-### [zio/zio-json](https://github.com/zio/zio-json)
+### [rcardin/yaes](https://github.com/rcardin/yaes)
 
-- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-json/1600) [#1600](https://github.com/zio/zio-json/issues/1600) — Json.Obj.equals returns true for distinct objects with duplicate keys
+- ![status](https://img.shields.io/github/issues/detail/state/rcardin/yaes/253) [#253](https://github.com/rcardin/yaes/issues/253) — yaes-core: `Raise.catching[E]` misses subclasses of `E` (uses `==` instead of `isInstance`)
+- ~~![status](https://img.shields.io/github/issues/detail/state/rcardin/yaes/254) [#254](https://github.com/rcardin/yaes/issues/254) — yaes-core: `JvmStructuredScope.scopes` uses `mutable.Map` from concurrent virtual threads~~ — **closed (FP):** agent looked at a local fork branch; `JvmStructuredScope` does not exist in upstream
+- ~~![status](https://img.shields.io/github/issues/detail/state/rcardin/yaes/255) [#255](https://github.com/rcardin/yaes/issues/255) — yaes-core: `Var` CAS loop uses Scala `==` (structural) instead of `eq` (reference) — ABA-prone~~ — **closed (FP):** agent looked at a local fork branch; `Var` does not exist in upstream
 
-### [zio/zio-protoquill](https://github.com/zio/zio-protoquill)
+### [rcardin/raise4s](https://github.com/rcardin/raise4s)
 
-- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-protoquill/747) [#747](https://github.com/zio/zio-protoquill/issues/747) — transaction commit/rollback wrapped in ZIO.succeed turns JDBC errors into unhandled defects
-- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-protoquill/748) [#748](https://github.com/zio/zio-protoquill/issues/748) — JdbcContext.probe leaks the JDBC Statement (never closed)
-- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-protoquill/749) [#749](https://github.com/zio/zio-protoquill/issues/749) — handleSingleResult silently swallows the multiple-row warning
-- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-protoquill/750) [#750](https://github.com/zio/zio-protoquill/issues/750) — String.startsWith / endsWith / contains compile to LIKE without escaping wildcards
+- ~~![status](https://img.shields.io/github/issues/detail/state/rcardin/raise4s/134) [#134](https://github.com/rcardin/raise4s/issues/134) — accumulate silently drops accumulated errors when no Value.value is read~~ — **closed (FP, runtime audit 2026-05-18):** `accumulate`'s ScalaDoc explicitly documents that errors are raised only on access — silent drop on unused values is by-design lazy semantics
 
-### [zio/zio-schema](https://github.com/zio/zio-schema)
+### [lloydmeta/enumeratum](https://github.com/lloydmeta/enumeratum)
 
-- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-schema/1096) [#1096](https://github.com/zio/zio-schema/issues/1096) — dynamic: DynamicValue round-trip fails for Schema.Fallback (Left/Right/Both)
-- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-schema/1097) [#1097](https://github.com/zio/zio-schema/issues/1097) — dynamic: DynamicValue round-trip fails for Schema.NonEmptySequence and Schema.NonEmptyMap
-- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-schema/1098) [#1098](https://github.com/zio/zio-schema/issues/1098) — Patch.Temporal for ZonedDateTimeType casts to LocalDate (ClassCastException)
-- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-schema/1099) [#1099](https://github.com/zio/zio-schema/issues/1099) — SchemaEquality compares rTuple.right with itself instead of lTuple.right
-- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-schema/1100) [#1100](https://github.com/zio/zio-schema/issues/1100) — MessagePack decoder: enum boundary check is off by one (ArrayIndexOutOfBoundsException for caseIndex == cases.length)
-- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-schema/1101) [#1101](https://github.com/zio/zio-schema/issues/1101) — MessagePack Fallback decoder uses path label "either" in error, and the size error says "1 or 2" instead of "2 or 3"
-- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-schema/1102) [#1102](https://github.com/zio/zio-schema/issues/1102) — Avro codec encodes ByteType as bare INT without a discriminator, so Schema[Byte] becomes Schema[Int] after roundtrip
-- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-schema/1108) [#1108](https://github.com/zio/zio-schema/issues/1108) — ThriftCodec streamEncoder shares mutable Encoder state across chunks (parallel streams interleave)
-- ![status](https://img.shields.io/github/issues/detail/state/zio/zio-schema/1109) [#1109](https://github.com/zio/zio-schema/issues/1109) — ProtobufCodec Fallback decoder error references annotation companion object instead of field number
+- ~~![status](https://img.shields.io/github/issues/detail/state/lloydmeta/enumeratum/469) [#469](https://github.com/lloydmeta/enumeratum/issues/469) — Slick CharEnum codec calls .head on the DB string and crashes on empty values~~ — **closed (FP, gate audit 2026-05-17):** sibling decoders share the same unchecked-read-then-map-lookup convention; maintainer already leaned non-issue
 
+### [armanbilge/calico](https://github.com/armanbilge/calico)
+
+- ~~![status](https://img.shields.io/github/issues/detail/state/armanbilge/calico/470) [#470](https://github.com/armanbilge/calico/issues/470) — KeyedChildren publishes the new active map before new nodes are acquired~~ — **closed (FP, gate audit 2026-05-17):** cats-effect `*>` short-circuits before the unsafe lookup; mutable-map ref behavior moots the leak claim
+
+## Cosmetic / messages
+
+### [typelevel/skunk](https://github.com/typelevel/skunk)
+
+- ![status](https://img.shields.io/github/issues/detail/state/typelevel/skunk/1295) [#1295](https://github.com/typelevel/skunk/issues/1295) — timestamptz precision error message has typo "timestampz" (missing "t")
 
 ## How this was built
 
