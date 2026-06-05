@@ -224,7 +224,17 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 
 ### [scala/scala3](https://github.com/scala/scala3)
 
-- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/26037) [#26037](https://github.com/scala/scala3/issues/26037) — Crash: AssertionError "asTerm called on not-a-Term type T" when exporting members of a cyclic opaque type companion
+> **Compiler crashes — the highest-value class of finding here (reference Scala 3 compiler, not library logic).** 9 issues: **4 already closed as fixed upstream with merged PRs**, 0 false positives (**0% AI-slop**). Sorted by priority (impact × fix-cost): invalid-bytecode and crashes-on-valid-code first; fixed and narrow edge cases last.
+
+- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/25725) [#25725](https://github.com/scala/scala3/issues/25725) — VerifyError: erased context-function parameter before non-erased produces invalid bytecode — **fixed (PR #25751)**
+- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/25727) [#25727](https://github.com/scala/scala3/issues/25727) — Nested `boundary`: inner block silently catches `break` meant for outer boundary via type inference — *open, disputed (maintainers lean by-design; `-Wnonunit-statement` lint suggested)*
+- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/25724) [#25724](https://github.com/scala/scala3/issues/25724) — Recursive macro splice causes StackOverflowError during inlining phase — **accepted, fix in #25937**
+- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/25246) [#25246](https://github.com/scala/scala3/issues/25246) — Crash: AssertionError in `TypeOps.dominators` with complex context bounds and quoted expression — *open, awaiting maintainer*
+- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/26037) [#26037](https://github.com/scala/scala3/issues/26037) — Crash: AssertionError "asTerm called on not-a-Term type T" when exporting members of a cyclic opaque type companion — *open, retest-on-nightly requested*
+- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/25244) [#25244](https://github.com/scala/scala3/issues/25244) — Crash in `tpd.singleton` on `PreviousErrorType` during error recovery (inline match + quoted pattern with unresolved import) — **accepted, maintainer-reproduced, fix WIP**
+- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/25726) [#25726](https://github.com/scala/scala3/issues/25726) — AssertionError in erasure when overriding generic trait method with erased using clause before type-param argument — **fixed (PRs #25923, #26047)**
+- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/25723) [#25723](https://github.com/scala/scala3/issues/25723) — Duplicate enum name (simple + parametric) causes assertion failure — **fixed (PR #26205)**
+- ![status](https://img.shields.io/github/issues/detail/state/scala/scala3/25248) [#25248](https://github.com/scala/scala3/issues/25248) — Parser crash (AssertionError) when line comment hides `then` in for-generator inside new argument — **fixed (PR #25253)**
 
 ### [scalameta/munit](https://github.com/scalameta/munit)
 
