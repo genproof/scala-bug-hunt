@@ -8,15 +8,15 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 
 | Metric | Value |
 |---|---|
-| Issues filed | **204** across **53** Scala projects |
-| Closed | **97 (~48%)** — 82 fixed/accepted by maintainers, 15 withdrawn by me |
-| Open | 107 |
-| **AI-slop (false positives)** | **14 (~7%)** — all self-found via the adversarial gate + runtime audit and self-closed with an apology |
+| Issues filed | **183** across **51** Scala projects |
+| Closed | **91 (~50%)** — 81 fixed/accepted by maintainers, 10 withdrawn by me |
+| Open | 92 |
+| **AI-slop (false positives)** | **9 (~5%)** — all self-found via the adversarial gate + runtime audit and self-closed with an apology |
 | scala/scala3 compiler crashes | **9** (4 already fixed upstream, merged PRs) |
 
 Issues are listed by priority below — Scala 3 compiler crashes first (broadest impact), then the rest.
 
-> **Self-audit.** All filings were re-run through a cross-vendor adversarial gate (codex prover + claude skeptic + 2 independent judges) and a `scala-cli` runtime-reproduction pass. The **15 ~~struck-through~~ issues** below have been self-closed: 8 false positives the gate flagged on 2026-05-17 (apologised in each thread), 2 yaes ones where the agent read a stale local fork, 1 soundness one already fixed upstream before filing, and 4 the 2026-05-18 runtime audit could not reproduce. The other **189 issues stand** — 14 of the 15 self-closures were genuine false positives (the soundness one was a real bug, just already fixed), so the false-positive rate is 14/204 ≈ 7%.
+> **Self-audit.** All filings were re-run through a cross-vendor adversarial gate (codex prover + claude skeptic + 2 independent judges) and a `scala-cli` runtime-reproduction pass. The **10 ~~struck-through~~ issues** below have been self-closed: 6 false positives the gate flagged on 2026-05-17 (apologised in each thread), 1 soundness one already fixed upstream before filing, and 3 the 2026-05-18 runtime audit could not reproduce. The other **173 issues stand** — 9 of the 10 self-closures were genuine false positives (the soundness one was a real bug, just already fixed), so the false-positive rate is 9/183 ≈ 5%.
 
 ## Issues filed
 
@@ -63,37 +63,12 @@ Issues are listed by priority below — Scala 3 compiler crashes first (broadest
 - ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/732) [#732](https://github.com/takapi327/ldbc/issues/732) — Pool `resetConnection` commits pending transactions instead of rolling back (autoCommit set before rollback)
 - ![status](https://img.shields.io/github/issues/detail/state/takapi327/ldbc/733) [#733](https://github.com/takapi327/ldbc/issues/733) — CharsetMapping cp850 has mblen=2 instead of mblen=1 (single-byte charset misclassified)
 
-### [http4s/http4s](https://github.com/http4s/http4s)
-
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7835) [#7835](https://github.com/http4s/http4s/issues/7835) — HttpDate.fromInstant truncates negative epochs toward zero, off by one second before 1970
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7836) [#7836](https://github.com/http4s/http4s/issues/7836) — Content-Range parser and constructor accept invalid ranges where first > last
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7837) [#7837](https://github.com/http4s/http4s/issues/7837) — Set-Cookie Max-Age parser rejects negative values that RFC 6265 specifies as valid
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7838) [#7838](https://github.com/http4s/http4s/issues/7838) — UriCoding.encode sign-extends bytes >= 0x80 when calling toSkip, breaking custom predicates for non-ASCII
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7839) [#7839](https://github.com/http4s/http4s/issues/7839) — HttpsRedirect middleware bakes the port into the hostname (or drops it entirely) in the redirect Location
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7840) [#7840](https://github.com/http4s/http4s/issues/7840) — CORS default policy allows PUT/PATCH/DELETE despite docstring saying GET, HEAD, POST only
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7841) [#7841](https://github.com/http4s/http4s/issues/7841) — RelaxedCookies parser accepts DEL (0x7F) and C1 control characters in cookie values
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7842) [#7842](https://github.com/http4s/http4s/issues/7842) — Keep-Alive reservedTokens has typo "token" instead of "timeout"
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7843) [#7843](https://github.com/http4s/http4s/issues/7843) — Retry-After delay-seconds parser throws NumberFormatException on overflow instead of returning ParseFailure
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7844) [#7844](https://github.com/http4s/http4s/issues/7844) — Host header constructor and parser accept invalid port numbers (negative, > 65535)
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7845) [#7845](https://github.com/http4s/http4s/issues/7845) — VirtualHost.wildcard allows regex injection through unescaped metacharacters
-- ~~![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7846) [#7846](https://github.com/http4s/http4s/issues/7846) — Caching middleware Expires arithmetic can overflow Long for large but finite lifetimes~~ — **closed (FP, runtime audit 2026-05-18):** `scala.concurrent.duration.Duration` caps at ~292 years; the overflow scenario described isn't reachable from user code
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7847) [#7847](https://github.com/http4s/http4s/issues/7847) — Throttle.defaultResponse silently drops the retryAfter parameter — no Retry-After header on 429
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7848) [#7848](https://github.com/http4s/http4s/issues/7848) — VirtualHost.regex uses partial match instead of full match — host header spoofing
-- ![status](https://img.shields.io/github/issues/detail/state/http4s/http4s/7849) [#7849](https://github.com/http4s/http4s/issues/7849) — Access-Control-Max-Age.Cache.apply bypasses the validation in fromLong
-
 ### [zio/zio-protoquill](https://github.com/zio/zio-protoquill)
 
 - ![status](https://img.shields.io/github/issues/detail/state/zio/zio-protoquill/747) [#747](https://github.com/zio/zio-protoquill/issues/747) — transaction commit/rollback wrapped in ZIO.succeed turns JDBC errors into unhandled defects
 - ![status](https://img.shields.io/github/issues/detail/state/zio/zio-protoquill/748) [#748](https://github.com/zio/zio-protoquill/issues/748) — JdbcContext.probe leaks the JDBC Statement (never closed)
 - ![status](https://img.shields.io/github/issues/detail/state/zio/zio-protoquill/749) [#749](https://github.com/zio/zio-protoquill/issues/749) — handleSingleResult silently swallows the multiple-row warning
 - ![status](https://img.shields.io/github/issues/detail/state/zio/zio-protoquill/750) [#750](https://github.com/zio/zio-protoquill/issues/750) — String.startsWith / endsWith / contains compile to LIKE without escaping wildcards
-
-### [AugustNagro/magnum](https://github.com/AugustNagro/magnum)
-
-- ~~![status](https://img.shields.io/github/issues/detail/state/AugustNagro/magnum/148) [#148](https://github.com/AugustNagro/magnum/issues/148) — Transactor.transact catches every Throwable, including OOM and StackOverflow~~ — **closed (FP, gate audit 2026-05-17):** broad `case t =>` is intentional — maintainer touched this block in #126 and kept the wide arm
-- ~~![status](https://img.shields.io/github/issues/detail/state/AugustNagro/magnum/149) [#149](https://github.com/AugustNagro/magnum/issues/149) — ScalaBigDecimalCodec.readSingle throws on SQL NULL instead of returning null~~ — **closed (FP, gate audit 2026-05-17):** framework contract — `T` codec throws on NULL, `Option[T]` handles it via `readSingleOption`
-- ![status](https://img.shields.io/github/issues/detail/state/AugustNagro/magnum/150) [#150](https://github.com/AugustNagro/magnum/issues/150) — Spec.orderBy / seek concatenate raw column names into SQL
-- ![status](https://img.shields.io/github/issues/detail/state/AugustNagro/magnum/151) [#151](https://github.com/AugustNagro/magnum/issues/151) — MagUser test fixture overrides equals but not hashCode (only affects tests)
 
 ### [wvlet/wvlet](https://github.com/wvlet/wvlet)
 
@@ -105,7 +80,7 @@ Issues are listed by priority below — Scala 3 compiler crashes first (broadest
 
 - ![status](https://img.shields.io/github/issues/detail/state/softwaremill/sttp/2880) [#2880](https://github.com/softwaremill/sttp/issues/2880) — Several `ByteBuffer.array()` calls don't check `hasArray()` and ignore position/limit
 - ![status](https://img.shields.io/github/issues/detail/state/softwaremill/sttp/2881) [#2881](https://github.com/softwaremill/sttp/issues/2881) — toCurl drops multipart filename, content-type, and per-part headers
-- ![status](https://img.shields.io/github/issues/detail/state/softwaremill/sttp/2882) [#2882](https://github.com/softwaremill/sttp/issues/2882) — DigestAuthenticator silently falls through to qop-unaware mode when server sends `qop="auth,auth-int"
+- ![status](https://img.shields.io/github/issues/detail/state/softwaremill/sttp/2882) [#2882](https://github.com/softwaremill/sttp/issues/2882) — DigestAuthenticator silently falls through to qop-unaware mode when server sends `qop="auth,auth-int"`
 
 ### [softwaremill/tapir](https://github.com/softwaremill/tapir)
 
@@ -166,9 +141,9 @@ Issues are listed by priority below — Scala 3 compiler crashes first (broadest
 
 ### [FunktionalIO/pillars](https://github.com/FunktionalIO/pillars)
 
-- ![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/259) [#259](https://github.com/FunktionalIO/pillars/issues/259) — rabbitmq-fs2` config conversion silently drops `automaticTopologyRecovery
-- ![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/260) [#260](https://github.com/FunktionalIO/pillars/issues/260) — flags` `FlagNotFound` error message is missing a space — `Flag my-featurenot found
-- ![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/261) [#261](https://github.com/FunktionalIO/pillars/issues/261) — Metrics` response-body-size recorder discards its `IO` via `Option.foreach
+- ![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/259) [#259](https://github.com/FunktionalIO/pillars/issues/259) — `rabbitmq-fs2` config conversion silently drops `automaticTopologyRecovery`
+- ![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/260) [#260](https://github.com/FunktionalIO/pillars/issues/260) — `flags` `FlagNotFound` error message is missing a space — `Flag my-featurenot found`
+- ![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/261) [#261](https://github.com/FunktionalIO/pillars/issues/261) — `Metrics` response-body-size recorder discards its `IO` via `Option.foreach`
 - ![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/262) [#262](https://github.com/FunktionalIO/pillars/issues/262) — db-skunk RedactionStrategy encoder writes "OptIn" while the decoder lowercases input and matches "optin"
 - ![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/263) [#263](https://github.com/FunktionalIO/pillars/issues/263) — Metrics.responseBodySize double-wraps m.eval, so the recorder.record IO is never run
 - ![status](https://img.shields.io/github/issues/detail/state/FunktionalIO/pillars/264) [#264](https://github.com/FunktionalIO/pillars/issues/264) — HTTP client metrics middleware never records request or response body size histograms
@@ -228,13 +203,13 @@ Issues are listed by priority below — Scala 3 compiler crashes first (broadest
 ### [propensive/soundness](https://github.com/propensive/soundness)
 
 - ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1041) [#1041](https://github.com/propensive/soundness/issues/1041) — hypotenuse `addS*` overflow check misses negative-overflow cases
-- ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1042) [#1042](https://github.com/propensive/soundness/issues/1042) — hypotenuse `Short.**` truncates its `Double` result through `.toShort
+- ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1042) [#1042](https://github.com/propensive/soundness/issues/1042) — hypotenuse `Short.**` truncates its `Double` result through `.toShort`
 - ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1043) [#1043](https://github.com/propensive/soundness/issues/1043) — hypotenuse `Byte`/`Short` `hex`/`octal`/`binary` sign-extend to 32 bits
 - ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1044) [#1044](https://github.com/propensive/soundness/issues/1044) — hypotenuse `Float`/`Double` `%%` returns wrong result for negative divisors
 - ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1045) [#1045](https://github.com/propensive/soundness/issues/1045) — quantitative Temperature + Quantity[Rankines[1]] uses inverted 9/5 factor (should be 5/9)
 - ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1046) [#1046](https://github.com/propensive/soundness/issues/1046) — gossamer `levenshteinDistance` returns 0 when the left string is empty
 - ~~![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1047) [#1047](https://github.com/propensive/soundness/issues/1047) — jacinta `Json.delete` allocates `Array[String]` for the values column~~ — **closed (stale):** real bug, but already fixed in commit `3213c2e24` before the issue was opened
-- ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1048) [#1048](https://github.com/propensive/soundness/issues/1048) — iridescence `Hsl.saturate`/`desaturate`/`rotate`/`pure` return `Hsv` instead of `Hsl
+- ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1048) [#1048](https://github.com/propensive/soundness/issues/1048) — iridescence `Hsl.saturate`/`desaturate`/`rotate`/`pure` return `Hsv` instead of `Hsl`
 - ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1049) [#1049](https://github.com/propensive/soundness/issues/1049) — geodesy `Compass.points8` lists `Southwest` twice; `Northwest` is missing
 - ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1050) [#1050](https://github.com/propensive/soundness/issues/1050) — caesura `Dsv` showable only quotes cells containing the quote char, not the delimiter or newlines
 - ![status](https://img.shields.io/github/issues/detail/state/propensive/soundness/1051) [#1051](https://github.com/propensive/soundness/issues/1051) — parasite Task.apply silently ignores the daemon parameter, hardcodes daemon = false
@@ -292,7 +267,7 @@ Issues are listed by priority below — Scala 3 compiler crashes first (broadest
 - ~~![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/465) [#465](https://github.com/kitlangton/neotype/issues/465) — CaseClassBuilder.newInstance silently swallows constructor exceptions and returns a fake value~~ — **closed (FP, gate audit 2026-05-17):** three fallback arms read as deliberate partial-evaluation; no runtime reproducer
 - ![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/466) [#466](https://github.com/kitlangton/neotype/issues/466) — LambdaCompiler.isDefinedAt silently turns Left(error) into false — collect/filter/exists drop elements without surfacing comptime errors
 - ~~![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/467) [#467](https://github.com/kitlangton/neotype/issues/467) — TermCompiler — TermIR.Throw uses raw throw inside flatMap, bypassing the Either error pipeline~~ — **closed (FP, gate audit 2026-05-17):** file's own author comments mark these compile-time throws as intentional
-- ![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/468) [#468](https://github.com/kitlangton/neotype/issues/468) — comptime LambdaCompiler discards match scrutinee — `(x => f(x) match ...)` matches against `x`, not `f(x)
+- ![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/468) [#468](https://github.com/kitlangton/neotype/issues/468) — comptime LambdaCompiler discards match scrutinee — `(x => f(x) match ...)` matches against `x`, not `f(x)`
 - ![status](https://img.shields.io/github/issues/detail/state/kitlangton/neotype/473) [#473](https://github.com/kitlangton/neotype/issues/473) — MatchCompiler eagerly evaluates scrutinee, ignoring intervening MutableRef writes
 
 ### [com-lihaoyi/upickle](https://github.com/com-lihaoyi/upickle)
@@ -372,8 +347,6 @@ Issues are listed by priority below — Scala 3 compiler crashes first (broadest
 ### [rcardin/yaes](https://github.com/rcardin/yaes)
 
 - ![status](https://img.shields.io/github/issues/detail/state/rcardin/yaes/253) [#253](https://github.com/rcardin/yaes/issues/253) — yaes-core: `Raise.catching[E]` misses subclasses of `E` (uses `==` instead of `isInstance`)
-- ~~![status](https://img.shields.io/github/issues/detail/state/rcardin/yaes/254) [#254](https://github.com/rcardin/yaes/issues/254) — yaes-core: `JvmStructuredScope.scopes` uses `mutable.Map` from concurrent virtual threads~~ — **closed (FP):** agent looked at a local fork branch; `JvmStructuredScope` does not exist in upstream
-- ~~![status](https://img.shields.io/github/issues/detail/state/rcardin/yaes/255) [#255](https://github.com/rcardin/yaes/issues/255) — yaes-core: `Var` CAS loop uses Scala `==` (structural) instead of `eq` (reference) — ABA-prone~~ — **closed (FP):** agent looked at a local fork branch; `Var` does not exist in upstream
 
 ### [rcardin/raise4s](https://github.com/rcardin/raise4s)
 
