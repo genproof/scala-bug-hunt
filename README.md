@@ -9,14 +9,14 @@ Every bug below has a minimal, runnable reproducer (`scala-cli`, Scala 3.8.3 + l
 | Metric | Value |
 |---|---|
 | Issues filed | **204** across **53** Scala projects |
-| Closed | **93 (~47%)** — ~78 fixed or accepted by maintainers, 15 withdrawn by me |
-| Open | 104 |
+| Closed | **97 (~48%)** — 82 fixed/accepted by maintainers, 15 withdrawn by me |
+| Open | 107 |
 | **AI-slop (false positives)** | **14 (~7%)** — all self-found via the adversarial gate + runtime audit and self-closed with an apology |
 | scala/scala3 compiler crashes | **9** (4 already fixed upstream, merged PRs) |
 
 Issues are listed by priority below — Scala 3 compiler crashes first (broadest impact), then the rest.
 
-> **2026-05-17 retroactive audit.** All filings were re-run through a cross-vendor adversarial gate (codex prover + claude skeptic + 2 independent judges). 15 issues marked ~~struck through~~ below have been self-closed: 8 are false positives the gate flagged (and I've apologised in each thread), 2 yaes ones were the agent reading a stale local fork, and 1 soundness one was already-fixed upstream before filing. The remaining 168 issues survived the gate, and **13 additional issues were filed after the audit** — each strict-verified by adversarial gate + `scala-cli` runtime reproduction.
+> **Self-audit.** All filings were re-run through a cross-vendor adversarial gate (codex prover + claude skeptic + 2 independent judges) and a `scala-cli` runtime-reproduction pass. The **15 ~~struck-through~~ issues** below have been self-closed: 8 false positives the gate flagged on 2026-05-17 (apologised in each thread), 2 yaes ones where the agent read a stale local fork, 1 soundness one already fixed upstream before filing, and 4 the 2026-05-18 runtime audit could not reproduce. The other **189 issues stand** — 14 of the 15 self-closures were genuine false positives (the soundness one was a real bug, just already fixed), so the false-positive rate is 14/204 ≈ 7%.
 
 ## Issues filed
 
